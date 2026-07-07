@@ -465,7 +465,8 @@
     // --- What's new toggle (switch between original / redesign) ---
     if (e.target.closest(".whats-new-toggle")) {
       var d = UIState.dashboard;
-      d.whatsNewVariant = d.whatsNewVariant === "original" ? "redesign" : "original";
+      d.whatsNewVariant =
+        d.whatsNewVariant === "original" ? "redesign" : "original";
       Render.dashboard();
       return;
     }
@@ -530,7 +531,8 @@
     if (updChevron) {
       var card = updChevron.closest(".wn-card");
       var id = card.dataset.itemId;
-      UIState.dashboard.openUpdateCard[id] = !UIState.dashboard.openUpdateCard[id];
+      UIState.dashboard.openUpdateCard[id] =
+        !UIState.dashboard.openUpdateCard[id];
       Render.dashboard();
       return;
     }
@@ -540,7 +542,8 @@
       var card = updHeader.closest(".wn-card");
       if (card && card.classList.contains("wn-card-top-update")) {
         var id = card.dataset.itemId;
-        UIState.dashboard.openUpdateCard[id] = !UIState.dashboard.openUpdateCard[id];
+        UIState.dashboard.openUpdateCard[id] =
+          !UIState.dashboard.openUpdateCard[id];
         Render.dashboard();
         return;
       }
@@ -556,9 +559,14 @@
     // --- Redesign: dismiss update ---
     var dismissBtn = e.target.closest(".wn-btn-dismiss");
     if (dismissBtn) {
-      var item = DataHelpers.find(dismissBtn.dataset.source, dismissBtn.dataset.itemId);
+      var item = DataHelpers.find(
+        dismissBtn.dataset.source,
+        dismissBtn.dataset.itemId,
+      );
       if (item && item.updates) {
-        item.updates.forEach(function (u) { u.seen = true; });
+        item.updates.forEach(function (u) {
+          u.seen = true;
+        });
         delete UIState.dashboard.openUpdateCard[dismissBtn.dataset.itemId];
         var updated = DataHelpers.getUpdatedTasks();
         if (UIState.dashboard.updateIndex >= updated.length) {
@@ -949,6 +957,29 @@
     });
   })();
 })();
+
+/* ========== Version Switcher (outside IIFE) ========== */
+const versionSwitcherToggle = document.getElementById("versionSwitcherToggle");
+const versionMenu = document.getElementById("versionMenu");
+
+if (versionSwitcherToggle && versionMenu) {
+  versionSwitcherToggle.addEventListener("click", (event) => {
+    event.stopPropagation();
+
+    const isOpen = !versionMenu.hidden;
+    versionMenu.hidden = isOpen;
+    versionSwitcherToggle.setAttribute("aria-expanded", String(!isOpen));
+  });
+
+  document.addEventListener("click", () => {
+    versionMenu.hidden = true;
+    versionSwitcherToggle.setAttribute("aria-expanded", "false");
+  });
+
+  versionMenu.addEventListener("click", (event) => {
+    event.stopPropagation();
+  });
+}
 
 /* ========== Theme toggle (outside IIFE) ========== */
 (function () {

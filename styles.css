@@ -1851,6 +1851,169 @@ body[data-theme="dark"] .section-icon.refresh-extraction-btn:hover {
   background: rgba(109, 168, 159, 0.1);
 }
 
+/* ============ VERSION SWITCHER ============ */
+
+.version-switcher {
+  position: fixed;
+  top: 22px;
+  left: 22px;
+  z-index: 100;
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+.version-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 34px;
+  padding: 0 11px;
+  border: 0.5px solid rgba(0, 0, 0, 0.08);
+  border-radius: 999px;
+  background: rgba(241, 239, 232, 0.72);
+  color: #5f5e5a;
+  font-family: inherit;
+  cursor: pointer;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease;
+}
+
+.version-trigger:hover {
+  background: rgba(241, 239, 232, 0.95);
+  border-color: rgba(74, 104, 98, 0.18);
+  color: #2c2c2a;
+}
+
+.version-name {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.1px;
+}
+
+.version-separator {
+  color: #aaa79f;
+}
+
+.version-code {
+  font-size: 12px;
+  font-weight: 500;
+  color: #888780;
+}
+
+.version-trigger i {
+  margin-left: 2px;
+  font-size: 14px;
+  color: #888780;
+}
+
+.version-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  width: 168px;
+  padding: 5px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.82);
+  border: 0.5px solid rgba(0, 0, 0, 0.08);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.1);
+}
+
+.version-menu[hidden] {
+  display: none;
+}
+
+.version-option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-height: 34px;
+  padding: 0 9px;
+  border-radius: 10px;
+  color: #5f5e5a;
+  text-decoration: none;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
+}
+
+.version-option:hover {
+  background: rgba(0, 0, 0, 0.04);
+  color: #2c2c2a;
+}
+
+.version-option.active {
+  background: rgba(74, 104, 98, 0.1);
+  color: #4a6862;
+}
+
+.version-option span {
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.version-option small {
+  font-size: 11px;
+  font-weight: 500;
+  color: #4a6862;
+}
+
+/* Dark theme */
+body[data-theme="dark"] .version-trigger {
+  background: rgba(28, 27, 24, 0.74);
+  border-color: rgba(255, 255, 255, 0.08);
+  color: #9c9a94;
+}
+
+body[data-theme="dark"] .version-trigger:hover {
+  background: rgba(41, 40, 38, 0.92);
+  border-color: rgba(109, 168, 159, 0.2);
+  color: #e5e3dc;
+}
+
+body[data-theme="dark"] .version-separator,
+body[data-theme="dark"] .version-code,
+body[data-theme="dark"] .version-trigger i {
+  color: #6b6963;
+}
+
+body[data-theme="dark"] .version-menu {
+  background: rgba(41, 40, 38, 0.9);
+  border-color: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.32);
+}
+
+body[data-theme="dark"] .version-option {
+  color: #9c9a94;
+}
+
+body[data-theme="dark"] .version-option:hover {
+  background: rgba(255, 255, 255, 0.055);
+  color: #e5e3dc;
+}
+
+body[data-theme="dark"] .version-option.active {
+  background: rgba(109, 168, 159, 0.12);
+  color: #6da89f;
+}
+
+body[data-theme="dark"] .version-option small {
+  color: #6da89f;
+}
+
+/* Keep prototype controls out of the mobile app view */
+@media (max-width: 480px) {
+  .version-switcher {
+    display: none;
+  }
+}
+
 /* ============ RESPONSIVE: drop phone frame on narrow viewports ============
    Below 480px (phones), the frame is removed and the app fills the entire screen.
    The interior structure is unchanged — top bar, screen container, bottom bar
@@ -2134,8 +2297,14 @@ body[data-theme="dark"] .section-icon.refresh-extraction-btn:hover {
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(6px); }
-  to   { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .digest-icon-cluster {

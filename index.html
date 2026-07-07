@@ -32,6 +32,44 @@
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
+    <!-- Version switcher -->
+    <div class="version-switcher">
+      <button
+        class="version-trigger"
+        id="versionSwitcherToggle"
+        aria-label="Switch prototype version"
+        aria-expanded="false"
+      >
+        <span class="version-name">Preview</span>
+        <span class="version-separator">·</span>
+        <span class="version-code">v2</span>
+        <i class="ti ti-chevron-down"></i>
+      </button>
+
+      <div class="version-menu" id="versionMenu" hidden>
+        <a
+          class="version-option"
+          href="https://nicoa07.github.io/Noti-webapp-prototype/"
+        >
+          <span>Prototype</span>
+        </a>
+
+        <a
+          class="version-option"
+          href="https://nicoa07.github.io/Noti-webapp-preview/"
+        >
+          <span>Preview</span>
+        </a>
+
+        <a
+          class="version-option active"
+          href="https://nicoa07.github.io/Noti-webapp-preview-v2/"
+        >
+          <span>Preview v2</span>
+          <small>Current</small>
+        </a>
+      </div>
+    </div>
     <!-- Theme toggle (outside phone frame, desktop only) -->
     <div class="theme-toggle-wrap">
       <button
@@ -142,7 +180,10 @@
                 <h3 class="dash-section-title">
                   <i class="ti ti-sparkles"></i> What's new
                 </h3>
-                <button class="whats-new-toggle" aria-label="Switch layout variant">
+                <button
+                  class="whats-new-toggle"
+                  aria-label="Switch layout variant"
+                >
                   <i class="ti ti-arrows-exchange"></i>
                 </button>
               </header>
