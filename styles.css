@@ -1,0 +1,3149 @@
+/* ============================================================
+   Noti app styles
+   ============================================================
+   Layout: phone-frame > app-viewport > [top-bar, screen-container, bottom-bar]
+
+   COLOR SCHEME
+   ─────────────────────────────────────────────────────────────
+   LIGHT THEME (default):
+     Page bg (around phone):    #d8d4c8
+     Phone frame:               #1a1a1a
+     App bg:                    #f1efe8
+     Card bg:                   #ffffff
+     Text primary:              #2c2c2a
+     Text secondary:            #5f5e5a
+     Text tertiary:             #888780
+     Accent (nav, drawer, UI):  #4A6862  (sage/teal)
+     Card border:               rgba(0, 0, 0, 0.15)
+     Dividers:                  rgba(0, 0, 0, 0.06)
+
+   DARK THEME ([data-theme="dark"] on body):
+     Page bg:                   #1a1917
+     Phone frame:               #0e0e0d
+     App bg:                    #1c1b18
+     Card bg:                   #292826
+     Text primary:              #e5e3dc
+     Text secondary:            #9c9a94
+     Text tertiary:             #6b6963
+     Accent:                    #6da89f  (lighter sage for dark bg)
+     Card border:               rgba(255, 255, 255, 0.08)
+     Dividers:                  rgba(255, 255, 255, 0.06)
+
+   Section colors (same both themes — tasks = blue, keep = green):
+     Tasks primary:             #3B82F6
+     Tasks tint bg:             rgba(59, 130, 246, 0.08)  light
+                                rgba(59, 130, 246, 0.15)  dark
+     Tasks border:              rgba(59, 130, 246, 0.35)
+
+     Keep primary:              #22C55E
+     Keep tint bg:              rgba(34, 197, 94, 0.08)   light
+                                rgba(34, 197, 94, 0.15)   dark
+     Keep border:               rgba(34, 197, 94, 0.35)
+
+   Applied consistently to:
+     - Section header title + icon color
+     - Card left-side accent border
+     - Filter chip active state
+     - Linked item indicators on notification cards
+     - Edit screen state chips
+
+   Other:
+     Slack logo bg:             #4A154B
+     Telegram logo bg:          #229ED9
+     Gmail logo bg:             #d93025
+     Danger text:               #d32f2f (light) / #ef5350 (dark)
+     Toast bg:                  rgba(44, 44, 42, 0.96)
+   ─────────────────────────────────────────────────────────────
+   Dark theme toggled via [data-theme="dark"] on <body>.
+   ============================================================ */
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background: #d8d4c8;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 32px 16px;
+  color: #2c2c2a;
+}
+
+/* ============ PHONE FRAME (desktop preview) ============ */
+.phone-frame {
+  background: #1a1a1a;
+  border-radius: 44px;
+  padding: 10px;
+  box-shadow:
+    0 24px 60px rgba(0, 0, 0, 0.28),
+    0 8px 20px rgba(0, 0, 0, 0.12);
+}
+
+.app-viewport {
+  width: 390px;
+  height: 740px;
+  background: #f1efe8;
+  border-radius: 36px;
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ============ TOP BAR ============ */
+.top-bar {
+  flex-shrink: 0;
+  height: 56px;
+  padding: 0 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #f1efe8;
+  border-bottom: 0.5px solid rgba(0, 0, 0, 0.06);
+  z-index: 10;
+}
+
+.chrome-icon {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  color: #2c2c2a;
+  border-radius: 12px;
+  padding: 0;
+}
+
+.chrome-icon:hover {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.chrome-icon i {
+  font-size: 22px;
+}
+
+.app-name {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 600;
+  color: #2c2c2a;
+  letter-spacing: 0.2px;
+}
+
+/* ============ SCREEN CONTAINER ============ */
+.screen-container {
+  flex: 1;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  position: relative;
+  /* extra bottom padding so the last card isn't tucked under the overlay bottom bar */
+  padding-bottom: 96px;
+}
+
+.screen[hidden] {
+  display: none;
+}
+
+.screen {
+  padding: 16px 0 0;
+}
+
+.screen[data-screen="home"] {
+  padding: 16px 20px 0;
+}
+
+/* ============ CARD SECTIONS ============ */
+.card-section + .card-section {
+  margin-top: 24px;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 20px;
+  margin-bottom: 10px;
+  min-height: 32px;
+}
+
+.section-title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #2c2c2a;
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.section-count {
+  font-weight: 500;
+  font-size: 14px;
+  color: #888780;
+}
+
+/* Section color coding — tasks blue, keep green */
+.card-section[data-section="tasks"] .section-title {
+  color: #3b82f6;
+}
+
+.card-section[data-section="keep"] .section-title {
+  color: #22c55e;
+}
+
+.section-actions {
+  display: flex;
+  gap: 2px;
+  align-items: center;
+}
+
+.section-icon {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  color: #5f5e5a;
+  border-radius: 8px;
+  padding: 0;
+  transition: background 0.15s ease;
+}
+
+.section-icon:hover {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.section-icon i {
+  font-size: 18px;
+}
+
+.section-menu-wrap {
+  position: relative;
+}
+
+.section-dropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  background: #ffffff;
+  border: 0.5px solid rgba(0, 0, 0, 0.12);
+  border-radius: 12px;
+  padding: 4px;
+  min-width: 140px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  z-index: 20;
+}
+
+.section-dropdown[hidden] {
+  display: none;
+}
+
+.dropdown-item {
+  display: block;
+  width: 100%;
+  padding: 10px 12px;
+  border: none;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+  border-radius: 8px;
+  font-size: 14px;
+  color: #2c2c2a;
+  font-family: inherit;
+}
+
+.dropdown-item:hover {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+/* Section body */
+.section-body {
+  overflow: hidden;
+  transition: height 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 0 16px;
+}
+
+.section-empty {
+  padding: 12px 4px 18px;
+  color: #888780;
+  font-size: 14px;
+  font-style: italic;
+}
+
+/* ============ TASK CARD (copied from task-card-mockup.html, width adapted to fill section-body) ============ */
+.card {
+  background: #ffffff;
+  border: 0.5px solid rgba(0, 0, 0, 0.15);
+  border-radius: 12px;
+  padding: 14px 18px;
+  width: 100%;
+}
+
+/* Card left-side accent borders — tasks blue, keep green */
+.card-section[data-section="tasks"] .card,
+.saved-tasks-body .card {
+  border-left: 2.5px solid rgba(59, 130, 246, 0.35);
+}
+
+.card-section[data-section="keep"] .card,
+.saved-keep-body .card {
+  border-left: 2.5px solid rgba(34, 197, 94, 0.35);
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.card-title {
+  font-size: 15px;
+  font-weight: 500;
+  margin: 0;
+  flex: 1;
+  line-height: 1.4;
+  color: #2c2c2a;
+}
+
+.card-actions {
+  display: flex;
+  gap: 10px;
+  flex-shrink: 0;
+  padding-top: 2px;
+}
+
+.card-actions i {
+  font-size: 18px;
+  color: #5f5e5a;
+  cursor: pointer;
+}
+
+.card-body {
+  max-height: min(60vh, 420px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.card-contents {
+  font-size: 13px;
+  color: #5f5e5a;
+  margin: 4px 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  transition: height 0.3s ease;
+}
+
+.subtask-wrap {
+  position: relative;
+}
+
+.indent-guide {
+  position: absolute;
+  left: 0;
+  top: 2px;
+  bottom: 2px;
+  width: 2px;
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.subtasks {
+  padding-left: 22px;
+}
+
+.subtask-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 3px 0;
+}
+
+.subtask-row i.ti-square,
+.subtask-row i.ti-square-check {
+  font-size: 18px;
+  color: #5f5e5a;
+  cursor: pointer;
+}
+
+.subtask-label {
+  flex: 1;
+  min-width: 0;
+  font-size: 14px;
+  color: #2c2c2a;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  transition: height 0.3s ease;
+}
+
+.subtask-menu {
+  font-size: 16px;
+  color: #888780;
+  cursor: pointer;
+}
+
+.subtask-more {
+  color: #888780;
+  cursor: pointer;
+}
+
+.subtask-more i {
+  font-size: 18px;
+}
+
+.subtask-more span {
+  font-size: 14px;
+}
+
+.extra-subtasks {
+  height: 0;
+  overflow: hidden;
+  transition: height 0.3s ease;
+}
+
+.extra-subtasks .subtask-label {
+  white-space: normal;
+  overflow: visible;
+  text-overflow: unset;
+  height: auto;
+  transition: none;
+}
+
+/* ============ NOTIFICATION CARD (copied from notification-cards.html, width adapted) ============ */
+.notif-card {
+  background: #ffffff;
+  border: 0.5px solid rgba(0, 0, 0, 0.15);
+  border-radius: 12px;
+  padding: 14px 16px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.notif-logo {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.notif-logo.slack {
+  background: #4a154b;
+}
+
+.notif-logo.telegram {
+  background: #229ed9;
+}
+
+.notif-logo.gmail {
+  background: #d93025;
+}
+
+.notif-logo i {
+  color: #ffffff;
+  font-size: 22px;
+}
+
+.notif-body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.notif-top-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.notif-app-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: #2c2c2a;
+}
+
+.notif-time {
+  font-size: 12px;
+  color: #888780;
+  flex-shrink: 0;
+}
+
+.notif-subtitle {
+  font-size: 13px;
+  color: #5f5e5a;
+  margin-top: 2px;
+}
+
+.notif-contents {
+  font-size: 13px;
+  color: #888780;
+  margin-top: 2px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  transition: height 0.3s ease;
+}
+
+.notif-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  flex-shrink: 0;
+}
+
+.notif-actions i {
+  font-size: 18px;
+  color: #5f5e5a;
+  cursor: pointer;
+}
+
+.notif-chevron {
+  transition: transform 0.25s ease;
+}
+
+/* ============ NOTIFICATION CARD WRAP (supports inline expand below card) ============ */
+.notif-card-wrap {
+  display: flex;
+  flex-direction: column;
+}
+
+.notif-top-spacer {
+  flex: 1;
+}
+
+/* ============ LINKED ITEM INDICATORS (right-aligned, tinted) ============ */
+.linked-indicators {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.linked-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 2px 4px;
+  border: none;
+  background: transparent;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.15s ease;
+  font-family: inherit;
+}
+
+.linked-indicator:active {
+  transform: scale(0.92);
+}
+
+.linked-indicator i {
+  font-size: 13px;
+}
+
+.linked-indicator span {
+  font-size: 10px;
+  font-weight: 600;
+}
+
+.li-task {
+  color: #3b82f6;
+}
+
+.li-task:hover {
+  background: rgba(59, 130, 246, 0.08);
+}
+
+.li-keep {
+  color: #22c55e;
+}
+
+.li-keep:hover {
+  background: rgba(34, 197, 94, 0.08);
+}
+
+/* ============ DELETE ALL NOTIFICATIONS BUTTON ============ */
+.delete-all-notifs-btn {
+  color: #888780;
+}
+
+.delete-all-notifs-btn:hover {
+  color: #d32f2f;
+  background: rgba(211, 47, 47, 0.06);
+}
+
+body[data-theme="dark"] .delete-all-notifs-btn:hover {
+  color: #ef5350;
+  background: rgba(239, 83, 80, 0.1);
+}
+
+/* ============ LINKED INLINE EXPAND ============ */
+.linked-expand-wrap {
+  overflow: hidden;
+  margin: 0 0 0 52px;
+  transition: height 0.25s ease;
+}
+
+.linked-expand-wrap[hidden] {
+  display: none;
+}
+
+.linked-preview {
+  padding: 10px 14px;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.linked-preview:hover {
+  background: rgba(0, 0, 0, 0.015);
+}
+
+.linked-preview:active {
+  background: rgba(0, 0, 0, 0.03);
+}
+
+.linked-preview-task {
+  background: rgba(59, 130, 246, 0.03);
+  border-left: 2px solid #3b82f6;
+  border-radius: 0 8px 8px 0;
+}
+
+.linked-preview-keep {
+  background: rgba(34, 197, 94, 0.03);
+  border-left: 2px solid #22c55e;
+  border-radius: 0 8px 8px 0;
+}
+
+.linked-preview + .linked-preview {
+  margin-top: 0;
+  border-top: 0.5px solid rgba(0, 0, 0, 0.04);
+}
+
+.linked-preview-label {
+  font-size: 11px;
+  font-weight: 500;
+  margin-bottom: 3px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.linked-preview-label i {
+  font-size: 13px;
+}
+
+.linked-preview-label.task-label {
+  color: #3b82f6;
+}
+
+.linked-preview-label.keep-label {
+  color: #22c55e;
+}
+
+.linked-preview-title {
+  font-size: 13px;
+  font-weight: 500;
+  color: #2c2c2a;
+  line-height: 1.3;
+}
+
+.linked-preview-body {
+  font-size: 11px;
+  color: #5f5e5a;
+  margin-top: 2px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+/* ============ SCREEN PLACEHOLDERS (Tasks, Keep) ============ */
+.screen-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 480px;
+  text-align: center;
+  color: #888780;
+  padding: 40px 20px;
+}
+
+.screen-placeholder i {
+  font-size: 64px;
+  color: #c4c0b3;
+  margin-bottom: 16px;
+}
+
+.screen-placeholder h2 {
+  font-size: 20px;
+  font-weight: 600;
+  color: #5f5e5a;
+  margin: 0 0 6px;
+}
+
+.screen-placeholder p {
+  font-size: 14px;
+  color: #888780;
+  margin: 0;
+}
+
+/* ============ BOTTOM TAB BAR ============ */
+.bottom-bar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: stretch;
+  justify-content: space-around;
+  height: 72px;
+  background: rgba(241, 239, 232, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-top: 0.5px solid rgba(0, 0, 0, 0.06);
+  transition: transform 0.3s ease;
+  z-index: 15;
+}
+
+.bottom-bar.hidden {
+  transform: translateY(100%);
+}
+
+.nav-tab {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  color: #888780;
+  padding: 8px 0;
+  font-family: inherit;
+}
+
+.nav-icon-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 30px;
+  border-radius: 16px;
+  transition: background 0.2s ease;
+  position: relative;
+}
+
+/* Nav badge */
+.nav-badge {
+  position: absolute;
+  top: -2px;
+  right: 4px;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  border-radius: 8px;
+  font-size: 9px;
+  font-weight: 600;
+  line-height: 16px;
+  text-align: center;
+  color: #ffffff;
+  font-family: inherit;
+}
+
+.nav-badge[hidden] {
+  display: none;
+}
+
+.badge-red {
+  background: #d32f2f;
+}
+
+.badge-blue {
+  background: #3b82f6;
+}
+
+.badge-green {
+  background: #22c55e;
+}
+
+.nav-tab i {
+  font-size: 22px;
+  transition: color 0.2s ease;
+}
+
+.nav-label {
+  font-size: 11px;
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+.nav-tab.active {
+  color: #4a6862;
+}
+
+.nav-tab.active .nav-icon-wrap {
+  background: rgba(74, 104, 98, 0.15);
+}
+
+.nav-tab.active i,
+.nav-tab.active .nav-label {
+  color: #4a6862;
+  font-weight: 600;
+}
+
+/* ===== Edit Tasks Screen ===== */
+
+/* ---- Header ---- */
+.notion-header {
+  display: flex;
+  align-items: flex-start; /* Align to top so title can wrap downwards */
+  justify-content: space-between;
+  padding: 8px 8px 16px;
+  gap: 12px;
+}
+
+.notion-title {
+  flex: 1;
+  font-size: 24px; /* Larger, more prominent like a document title */
+  font-weight: 700;
+  color: #2c2c2a;
+  margin: 4px 0 0 0;
+  outline: none;
+  word-break: break-word;
+  line-height: 1.3;
+}
+
+.notion-title:empty:before {
+  content: attr(data-placeholder);
+  color: #c4c0b3;
+}
+
+/* ---- Dropdowns (More Options & Calendar Export) ---- */
+.edit-menu-wrap {
+  position: relative;
+}
+
+.edit-dropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  background: #ffffff;
+  border: 0.5px solid rgba(0, 0, 0, 0.12);
+  border-radius: 12px;
+  padding: 4px;
+  min-width: 200px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  z-index: 30;
+}
+
+.text-danger {
+  color: #d32f2f !important;
+}
+
+/* ---- State toggle ---- */
+.state-toggle-row {
+  display: flex;
+  gap: 8px;
+  padding: 0 20px 20px;
+  border-bottom: 0.5px solid rgba(0, 0, 0, 0.06);
+}
+
+.state-chip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: 20px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  background: #ffffff;
+  font-size: 14px;
+  font-weight: 500;
+  color: #5f5e5a;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.state-chip i {
+  font-size: 18px;
+}
+
+.state-chip.active {
+  font-weight: 500;
+}
+
+/* State chip section colors — task blue, keep green */
+.state-chip[data-state="task"].active {
+  background: rgba(59, 130, 246, 0.1);
+  border-color: #3b82f6;
+  color: #3b82f6;
+}
+
+.state-chip[data-state="keep"].active {
+  background: rgba(34, 197, 94, 0.1);
+  border-color: #22c55e;
+  color: #22c55e;
+}
+
+/* ---- Notion Body ---- */
+.notion-body {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+/* Subtle dividers between edit screen sections */
+.notion-body > .property-list,
+.notion-body > .content-section,
+.notion-body > .subtasks-section {
+  padding-bottom: 16px;
+  margin-bottom: 16px;
+  border-bottom: 0.5px solid rgba(0, 0, 0, 0.06);
+}
+
+.notion-body > .subtasks-section {
+  padding-bottom: 0;
+  margin-bottom: 0;
+  border-bottom: none;
+}
+
+.property-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.property-row {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.property-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 90px;
+  color: #888780;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.property-label i {
+  font-size: 18px;
+}
+
+.property-value {
+  flex: 1;
+}
+
+/* ---- Invisible Inputs (Notion Style) ---- */
+.invisible-input,
+.invisible-textarea {
+  width: 100%;
+  border: none;
+  background: transparent;
+  font-family: inherit;
+  font-size: 15px;
+  color: #2c2c2a;
+  padding: 4px 8px;
+  border-radius: 6px;
+  transition: background 0.2s ease;
+}
+
+.invisible-input:hover,
+.invisible-textarea:hover {
+  background: rgba(0, 0, 0, 0.03);
+}
+
+.invisible-input:focus,
+.invisible-textarea:focus {
+  outline: none;
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.description-area {
+  resize: none;
+  min-height: 100px;
+  line-height: 1.5;
+  padding: 8px;
+}
+
+/* ---- Subtasks ---- */
+.subtasks-section {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.edit-subtask-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.edit-subtask-row i.ti-square,
+.edit-subtask-row i.ti-square-check {
+  font-size: 18px;
+  color: #5f5e5a;
+  padding-left: 8px;
+  cursor: pointer;
+}
+
+.delete-subtask {
+  color: #888780;
+  cursor: pointer;
+  padding: 8px;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.edit-subtask-row:hover .delete-subtask {
+  opacity: 1;
+}
+
+.add-subtask-btn {
+  align-self: flex-start;
+  background: transparent;
+  border: none;
+  color: #888780;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  padding: 8px;
+  margin-left: 2px;
+}
+
+.add-subtask-btn:hover {
+  background: rgba(0, 0, 0, 0.03);
+  border-radius: 6px;
+}
+
+/* ---- Utilities (chips at bottom) ---- */
+.utilities-section {
+  padding: 16px 20px 24px;
+  border-top: 0.5px solid rgba(0, 0, 0, 0.06);
+}
+
+.utility-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.util-chip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  background: #ffffff;
+  font-size: 13px;
+  color: #5f5e5a;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.util-chip:hover {
+  background: rgba(0, 0, 0, 0.02);
+}
+
+.util-menu-wrap {
+  position: relative;
+}
+
+.cal-dropdown {
+  position: absolute;
+  bottom: calc(
+    100% + 4px
+  ); /* Opens upwards to avoid being cut off by bottom edge */
+  left: 0;
+  background: #ffffff;
+  border: 0.5px solid rgba(0, 0, 0, 0.12);
+  border-radius: 12px;
+  padding: 4px;
+  min-width: 180px;
+  box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.15);
+  z-index: 30;
+}
+
+/* ============ CONFIRM BUTTON (edit screen header) ============ */
+.confirm-btn {
+  transition:
+    color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.confirm-btn.confirmed {
+  color: #4a6862 !important;
+  transform: scale(1.3);
+}
+
+.confirm-btn.confirmed i {
+  color: #4a6862;
+}
+
+/* ============ TOAST ============ */
+/* .toast {
+  position: absolute;
+  bottom: 88px;
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: #2c2c2a;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 500;
+  padding: 10px 20px;
+  border-radius: 10px;
+  z-index: 60;
+  opacity: 0;
+  transition:
+    opacity 0.25s ease,
+    transform 0.25s ease;
+  pointer-events: none;
+  white-space: nowrap;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18);
+} */
+
+.toast {
+  position: absolute;
+  left: 50%;
+  bottom: 88px;
+  transform: translateX(-50%) translateY(20px);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 42px;
+  padding: 0 16px;
+  background: rgba(44, 44, 42, 0.96);
+  color: #fff;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 500;
+  white-space: nowrap;
+  box-shadow:
+    0 8px 20px rgba(0, 0, 0, 0.18),
+    0 2px 6px rgba(0, 0, 0, 0.08);
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    opacity 0.25s ease,
+    transform 0.25s ease;
+  --toast-accent: #3b82f6; /* Keep: #22c55e*/
+}
+
+.toast-text {
+  color: #fff;
+  line-height: 1.2;
+}
+
+.toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+.toast-icon {
+  flex-shrink: 0;
+  font-size: 17px;
+  line-height: 1;
+  animation: toast-check 0.35s ease 0.1s both;
+}
+
+.toast-icon,
+.toast-destination {
+  color: var(--toast-accent);
+  transition: color 0.2s ease;
+}
+
+@keyframes toast-check {
+  from {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+
+  70% {
+    transform: scale(1.15);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* ============ FILTER CHIP ROW (Tasks / Keep screens) ============ */
+.filter-chip-row {
+  display: flex;
+  gap: 8px;
+  padding: 16px 20px 8px;
+}
+
+.filter-chip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  border-radius: 18px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  background: #ffffff;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  color: #5f5e5a;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.filter-chip i {
+  font-size: 16px;
+}
+
+.filter-chip:hover {
+  background: rgba(0, 0, 0, 0.03);
+}
+
+.filter-chip.active {
+  font-weight: 600;
+}
+
+/* Filter chip section colors — tasks blue, keep green */
+.filter-chip-row[data-filter-section="tasks"] .filter-chip.active {
+  background: rgba(59, 130, 246, 0.1);
+  border-color: #3b82f6;
+  color: #3b82f6;
+}
+
+.filter-chip-row[data-filter-section="keep"] .filter-chip.active {
+  background: rgba(34, 197, 94, 0.1);
+  border-color: #22c55e;
+  color: #22c55e;
+}
+
+/* ============ SAVED BODY (Tasks / Keep screens card list) ============ */
+.saved-body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 12px 16px;
+}
+
+.saved-empty {
+  padding: 40px 20px;
+  text-align: center;
+  color: #888780;
+  font-size: 14px;
+  font-style: italic;
+}
+
+/* ============ DRAWER (slide-in side menu) ============ */
+.drawer-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.35);
+  z-index: 40;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.drawer-overlay.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.drawer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 280px;
+  background: #f1efe8;
+  z-index: 50;
+  transform: translateX(-100%);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-top-right-radius: 16px;
+  border-bottom-right-radius: 16px;
+  box-shadow: none;
+}
+
+.drawer.open {
+  transform: translateX(0);
+  box-shadow: 4px 0 24px rgba(0, 0, 0, 0.12);
+}
+
+.drawer-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 28px 24px 24px;
+  border-bottom: 0.5px solid rgba(0, 0, 0, 0.08);
+}
+
+.drawer-logo {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: #4a6862;
+  color: #ffffff;
+  font-size: 20px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  letter-spacing: -0.5px;
+  flex-shrink: 0;
+}
+
+.drawer-app-name {
+  font-size: 20px;
+  font-weight: 700;
+  color: #2c2c2a;
+  letter-spacing: 0.3px;
+}
+
+.drawer-nav-top {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 12px;
+  gap: 2px;
+}
+
+.drawer-nav-bottom {
+  display: flex;
+  flex-direction: column;
+  padding: 12px;
+  gap: 2px;
+  border-top: 0.5px solid rgba(0, 0, 0, 0.08);
+}
+
+.drawer-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 14px;
+  border: none;
+  background: transparent;
+  border-radius: 10px;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 500;
+  color: #5f5e5a;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
+  width: 100%;
+  text-align: left;
+}
+
+.drawer-item i {
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+.drawer-item:hover {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.drawer-item.active {
+  background: rgba(74, 104, 98, 0.1);
+  color: #4a6862;
+  font-weight: 600;
+}
+
+/* ============ THEME TOGGLE ============ */
+.theme-toggle-wrap {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 100;
+}
+
+.theme-toggle {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  color: #5f5e5a;
+  border-radius: 10px;
+  padding: 0;
+  font-size: 20px;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
+}
+
+.theme-toggle:hover {
+  background: rgba(0, 0, 0, 0.06);
+}
+
+.theme-toggle .icon-dark {
+  display: none;
+}
+
+body[data-theme="dark"] .theme-toggle {
+  color: #9c9a94;
+}
+
+body[data-theme="dark"] .theme-toggle:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+body[data-theme="dark"] .theme-toggle .icon-light {
+  display: none;
+}
+
+body[data-theme="dark"] .theme-toggle .icon-dark {
+  display: inline;
+}
+
+/* ============ DARK THEME ============
+   Activated by [data-theme="dark"] on <body>.
+   Overrides all light-theme colors.
+   ============================================ */
+
+body[data-theme="dark"] {
+  background: #1a1917;
+  color: #e5e3dc;
+}
+
+body[data-theme="dark"] .phone-frame {
+  background: #0e0e0d;
+  box-shadow:
+    0 24px 60px rgba(0, 0, 0, 0.5),
+    0 8px 20px rgba(0, 0, 0, 0.3);
+}
+
+body[data-theme="dark"] .app-viewport {
+  background: #1c1b18;
+}
+
+/* -- Top bar -- */
+body[data-theme="dark"] .top-bar {
+  background: #1c1b18;
+  border-bottom-color: rgba(255, 255, 255, 0.06);
+}
+
+body[data-theme="dark"] .chrome-icon {
+  color: #e5e3dc;
+}
+
+body[data-theme="dark"] .chrome-icon:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+body[data-theme="dark"] .app-name {
+  color: #e5e3dc;
+}
+
+/* -- Section headers -- */
+body[data-theme="dark"] .section-title {
+  color: #e5e3dc;
+}
+
+body[data-theme="dark"] .card-section[data-section="tasks"] .section-title {
+  color: #60a5fa;
+}
+
+body[data-theme="dark"] .card-section[data-section="keep"] .section-title {
+  color: #4ade80;
+}
+
+body[data-theme="dark"] .section-count {
+  color: #6b6963;
+}
+
+body[data-theme="dark"] .section-icon {
+  color: #9c9a94;
+}
+
+body[data-theme="dark"] .section-icon:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+body[data-theme="dark"] .section-empty {
+  color: #6b6963;
+}
+
+/* -- Dropdowns -- */
+body[data-theme="dark"] .section-dropdown,
+body[data-theme="dark"] .edit-dropdown,
+body[data-theme="dark"] .cal-dropdown {
+  background: #33322f;
+  border-color: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+body[data-theme="dark"] .dropdown-item {
+  color: #e5e3dc;
+}
+
+body[data-theme="dark"] .dropdown-item:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+body[data-theme="dark"] .text-danger {
+  color: #ef5350 !important;
+}
+
+/* -- Cards -- */
+body[data-theme="dark"] .card {
+  background: #292826;
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+body[data-theme="dark"] .card-title {
+  color: #e5e3dc;
+}
+
+body[data-theme="dark"] .card-actions i {
+  color: #9c9a94;
+}
+
+body[data-theme="dark"] .card-contents {
+  color: #9c9a94;
+}
+
+body[data-theme="dark"] .subtask-label {
+  color: #e5e3dc;
+}
+
+body[data-theme="dark"] .subtask-row i.ti-square,
+body[data-theme="dark"] .subtask-row i.ti-square-check {
+  color: #9c9a94;
+}
+
+body[data-theme="dark"] .subtask-menu {
+  color: #6b6963;
+}
+
+body[data-theme="dark"] .subtask-more {
+  color: #6b6963;
+}
+
+body[data-theme="dark"] .indent-guide {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+/* -- Card left borders (section colors stay, slightly stronger) -- */
+body[data-theme="dark"] .card-section[data-section="tasks"] .card,
+body[data-theme="dark"] .saved-tasks-body .card {
+  border-left-color: rgba(59, 130, 246, 0.45);
+}
+
+body[data-theme="dark"] .card-section[data-section="keep"] .card,
+body[data-theme="dark"] .saved-keep-body .card {
+  border-left-color: rgba(34, 197, 94, 0.45);
+}
+
+/* -- Notification cards -- */
+body[data-theme="dark"] .notif-card {
+  background: #292826;
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+body[data-theme="dark"] .notif-app-name {
+  color: #e5e3dc;
+}
+
+body[data-theme="dark"] .notif-time {
+  color: #6b6963;
+}
+
+body[data-theme="dark"] .notif-subtitle {
+  color: #9c9a94;
+}
+
+body[data-theme="dark"] .notif-contents {
+  color: #6b6963;
+}
+
+body[data-theme="dark"] .notif-actions i {
+  color: #9c9a94;
+}
+
+/* -- Linked expand previews -- */
+body[data-theme="dark"] .linked-preview-task {
+  background: rgba(59, 130, 246, 0.06);
+}
+
+body[data-theme="dark"] .linked-preview-keep {
+  background: rgba(34, 197, 94, 0.06);
+}
+
+body[data-theme="dark"] .linked-preview:hover {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+body[data-theme="dark"] .linked-preview-title {
+  color: #e5e3dc;
+}
+
+body[data-theme="dark"] .linked-preview-body {
+  color: #9c9a94;
+}
+
+body[data-theme="dark"] .linked-preview + .linked-preview {
+  border-top-color: rgba(255, 255, 255, 0.04);
+}
+
+/* -- Edit screen -- */
+body[data-theme="dark"] .notion-title {
+  color: #e5e3dc;
+}
+
+body[data-theme="dark"] .notion-title:empty:before {
+  color: #4a4842;
+}
+
+body[data-theme="dark"] .state-toggle-row {
+  border-bottom-color: rgba(255, 255, 255, 0.06);
+}
+
+body[data-theme="dark"] .state-chip {
+  background: #292826;
+  border-color: rgba(255, 255, 255, 0.1);
+  color: #9c9a94;
+}
+
+body[data-theme="dark"] .state-chip[data-state="task"].active {
+  background: rgba(59, 130, 246, 0.15);
+  border-color: #3b82f6;
+  color: #60a5fa;
+}
+
+body[data-theme="dark"] .state-chip[data-state="keep"].active {
+  background: rgba(34, 197, 94, 0.15);
+  border-color: #22c55e;
+  color: #4ade80;
+}
+
+body[data-theme="dark"] .property-label {
+  color: #6b6963;
+}
+
+body[data-theme="dark"] .invisible-input,
+body[data-theme="dark"] .invisible-textarea {
+  color: #e5e3dc;
+}
+
+body[data-theme="dark"] .invisible-input:hover,
+body[data-theme="dark"] .invisible-textarea:hover {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+body[data-theme="dark"] .invisible-input:focus,
+body[data-theme="dark"] .invisible-textarea:focus {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+body[data-theme="dark"] .notion-body > .property-list,
+body[data-theme="dark"] .notion-body > .content-section {
+  border-bottom-color: rgba(255, 255, 255, 0.06);
+}
+
+/* -- Edit subtasks -- */
+body[data-theme="dark"] .edit-subtask-row i.ti-square,
+body[data-theme="dark"] .edit-subtask-row i.ti-square-check {
+  color: #9c9a94;
+}
+
+body[data-theme="dark"] .edit-subtask-row .invisible-input {
+  color: #e5e3dc;
+}
+
+body[data-theme="dark"] .delete-subtask {
+  color: #6b6963;
+}
+
+body[data-theme="dark"] .add-subtask-btn {
+  color: #6b6963;
+}
+
+body[data-theme="dark"] .add-subtask-btn:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+/* -- Utility chips -- */
+body[data-theme="dark"] .utilities-section {
+  border-top-color: rgba(255, 255, 255, 0.06);
+}
+
+body[data-theme="dark"] .util-chip {
+  background: #292826;
+  border-color: rgba(255, 255, 255, 0.1);
+  color: #9c9a94;
+}
+
+body[data-theme="dark"] .util-chip:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+/* -- Confirm button -- */
+body[data-theme="dark"] .confirm-btn.confirmed {
+  color: #6da89f !important;
+}
+
+body[data-theme="dark"] .confirm-btn.confirmed i {
+  color: #6da89f;
+}
+
+/* -- Filter chips -- */
+body[data-theme="dark"] .filter-chip {
+  background: #292826;
+  border-color: rgba(255, 255, 255, 0.1);
+  color: #9c9a94;
+}
+
+body[data-theme="dark"] .filter-chip:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+body[data-theme="dark"]
+  .filter-chip-row[data-filter-section="tasks"]
+  .filter-chip.active {
+  background: rgba(59, 130, 246, 0.15);
+  border-color: #3b82f6;
+  color: #60a5fa;
+}
+
+body[data-theme="dark"]
+  .filter-chip-row[data-filter-section="keep"]
+  .filter-chip.active {
+  background: rgba(34, 197, 94, 0.15);
+  border-color: #22c55e;
+  color: #4ade80;
+}
+
+/* -- Saved screens -- */
+body[data-theme="dark"] .saved-empty {
+  color: #6b6963;
+}
+
+/* -- Bottom bar -- */
+body[data-theme="dark"] .bottom-bar {
+  background: rgba(28, 27, 24, 0.88);
+  border-top-color: rgba(255, 255, 255, 0.06);
+}
+
+body[data-theme="dark"] .nav-tab {
+  color: #6b6963;
+}
+
+body[data-theme="dark"] .nav-tab.active {
+  color: #6da89f;
+}
+
+body[data-theme="dark"] .nav-tab.active .nav-icon-wrap {
+  background: rgba(109, 168, 159, 0.15);
+}
+
+body[data-theme="dark"] .nav-tab.active i,
+body[data-theme="dark"] .nav-tab.active .nav-label {
+  color: #6da89f;
+}
+
+/* -- Toast -- */
+body[data-theme="dark"] .toast {
+  background: rgba(240, 238, 232, 0.94);
+  color: #1c1b18;
+}
+
+body[data-theme="dark"] .toast-text {
+  color: #1c1b18;
+}
+
+/* -- Placeholder screens -- */
+body[data-theme="dark"] .screen-placeholder i {
+  color: #4a4842;
+}
+
+body[data-theme="dark"] .screen-placeholder h2 {
+  color: #9c9a94;
+}
+
+body[data-theme="dark"] .screen-placeholder p {
+  color: #6b6963;
+}
+
+/* -- Drawer -- */
+body[data-theme="dark"] .drawer-overlay {
+  background: rgba(0, 0, 0, 0.55);
+}
+
+body[data-theme="dark"] .drawer {
+  background: #1c1b18;
+}
+
+body[data-theme="dark"] .drawer.open {
+  box-shadow: 4px 0 24px rgba(0, 0, 0, 0.35);
+}
+
+body[data-theme="dark"] .drawer-brand {
+  border-bottom-color: rgba(255, 255, 255, 0.06);
+}
+
+body[data-theme="dark"] .drawer-logo {
+  background: #6da89f;
+}
+
+body[data-theme="dark"] .drawer-app-name {
+  color: #e5e3dc;
+}
+
+body[data-theme="dark"] .drawer-nav-bottom {
+  border-top-color: rgba(255, 255, 255, 0.06);
+}
+
+body[data-theme="dark"] .drawer-item {
+  color: #9c9a94;
+}
+
+body[data-theme="dark"] .drawer-item:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+body[data-theme="dark"] .drawer-item.active {
+  background: rgba(109, 168, 159, 0.12);
+  color: #6da89f;
+}
+
+/* -- Refresh button -- */
+body[data-theme="dark"] .section-icon.refresh-extraction-btn {
+  color: #6da89f;
+}
+
+body[data-theme="dark"] .section-icon.refresh-extraction-btn:hover {
+  background: rgba(109, 168, 159, 0.1);
+}
+
+/* ============ RESPONSIVE: drop phone frame on narrow viewports ============
+   Below 480px (phones), the frame is removed and the app fills the entire screen.
+   The interior structure is unchanged — top bar, screen container, bottom bar
+   all just expand to fit. */
+@media (max-width: 480px) {
+  body {
+    padding: 0;
+    background: #f1efe8;
+    align-items: stretch;
+    justify-content: stretch;
+  }
+
+  body[data-theme="dark"] {
+    background: #1c1b18;
+  }
+
+  .phone-frame {
+    background: transparent;
+    border-radius: 0;
+    padding: 0;
+    box-shadow: none;
+    width: 100%;
+    height: 100dvh; /* dynamic viewport height — handles mobile browser chrome */
+  }
+
+  .app-viewport {
+    width: 100%;
+    height: 100dvh;
+    border-radius: 0;
+  }
+
+  .theme-toggle-wrap {
+    display: none;
+  }
+}
+
+/* ============================================================
+   v3 DASHBOARD STYLES
+   ============================================================
+   Color additions to the system:
+     Updates (amber): #F59E0B  · tint rgba(245,158,11,0.10)
+     Dark-mode lifted amber:   #fbbf24
+   Everything else reuses the documented palette above.
+   ============================================================ */
+
+/* ---------- Drawer: group labels + category counts ---------- */
+
+.drawer-group-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #888780;
+  padding: 14px 16px 6px;
+}
+
+.drawer-count {
+  margin-left: auto;
+  font-size: 12px;
+  font-weight: 600;
+  color: #888780;
+}
+
+/* ---------- Greeting ---------- */
+
+.dash-greeting {
+  padding: 4px 2px 2px;
+}
+
+.dash-greeting-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: #2c2c2a;
+  margin: 0;
+}
+
+.dash-greeting-date {
+  font-size: 13px;
+  color: #888780;
+  margin: 2px 0 0;
+}
+
+/* ---------- Dashboard sections ---------- */
+
+.dash-section {
+  margin-top: 20px;
+}
+
+.dash-section-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.dash-section-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #5f5e5a;
+  margin: 0;
+}
+
+.dash-section-title .ti {
+  font-size: 16px;
+}
+
+/* ---------- Summary digest card ---------- */
+
+.digest-card {
+  background: #ffffff;
+  border: 0.5px solid rgba(0, 0, 0, 0.15);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.digest-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 14px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  font-family: inherit;
+}
+
+.digest-icon-cluster {
+  display: flex;
+  flex-shrink: 0;
+}
+
+.cluster-logo {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 15px;
+  border: 2px solid #ffffff;
+}
+
+.cluster-logo + .cluster-logo {
+  margin-left: -8px;
+}
+
+.digest-text {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+  flex: 1;
+}
+
+.digest-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #2c2c2a;
+}
+
+.digest-sub {
+  font-size: 12px;
+  color: #888780;
+}
+
+.digest-chevron {
+  color: #888780;
+  font-size: 18px;
+  transition: transform 0.25s ease;
+}
+
+.digest-card.open .digest-chevron {
+  transform: rotate(180deg);
+}
+
+.digest-body {
+  height: 0;
+  overflow: hidden;
+  transition: height 0.3s ease;
+}
+
+.digest-body-inner {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 0 12px 12px;
+  border-top: 0.5px solid rgba(0, 0, 0, 0.06);
+  padding-top: 0;
+}
+
+.digest-dismiss {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 10px 14px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  color: #d32f2f;
+  text-align: left;
+  border-bottom: 0.5px solid rgba(0, 0, 0, 0.06);
+}
+
+.digest-dismiss .ti {
+  font-size: 16px;
+}
+
+/* Compact notification cards inside the digest */
+.digest-body-inner .notif-card {
+  padding: 10px 12px;
+  gap: 10px;
+  border-radius: 10px;
+}
+
+.digest-body-inner .notif-logo {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+}
+
+.digest-body-inner .notif-logo i {
+  font-size: 16px;
+}
+
+.digest-body-inner .notif-app-name {
+  font-size: 13px;
+}
+
+.digest-body-inner .notif-subtitle {
+  font-size: 12px;
+}
+
+.digest-body-inner .notif-contents {
+  font-size: 12px;
+}
+
+.digest-body-inner .notif-actions i {
+  font-size: 16px;
+}
+
+.digest-caught-up {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 20px 14px;
+  text-align: center;
+}
+
+.digest-caught-up-icon {
+  font-size: 22px;
+  color: #22c55e;
+}
+
+.digest-caught-up-text {
+  font-size: 14px;
+  font-weight: 600;
+  color: #5f5e5a;
+}
+
+/* Dismiss crossfade transition */
+.digest-body-inner > * {
+  transition: opacity 0.25s ease;
+}
+
+.digest-body-inner.fading-out > * {
+  opacity: 0;
+}
+
+.digest-body-inner.fading-in > * {
+  animation: fadeIn 0.3s ease forwards;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.digest-icon-cluster {
+  transition: opacity 0.25s ease;
+}
+
+.digest-icon-cluster.fading-out {
+  opacity: 0;
+}
+
+.digest-card.dismissed-state .digest-chevron {
+  display: none;
+}
+
+.digest-card.dismissed-state .digest-header {
+  cursor: default;
+}
+
+.digest-view-all {
+  align-self: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  color: #4a6862;
+  padding: 4px 8px;
+}
+
+/* ---------- What's new: count chips ---------- */
+
+.new-chips {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.new-chips:not(:empty) {
+  margin-bottom: 10px;
+}
+
+.new-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.new-chip-task {
+  background: rgba(59, 130, 246, 0.1);
+  color: #3b82f6;
+}
+
+.new-chip-keep {
+  background: rgba(34, 197, 94, 0.1);
+  color: #16a34a;
+}
+
+/* ---------- What's new: activity feed (amber updates) ---------- */
+
+.activity-feed {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.activity-entry {
+  background: #ffffff;
+  border: 0.5px solid rgba(0, 0, 0, 0.15);
+  border-left: 3px solid #f59e0b;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.activity-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 12px 14px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  font-family: inherit;
+}
+
+.activity-icon {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: rgba(245, 158, 11, 0.12);
+  color: #f59e0b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+.activity-text {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+  flex: 1;
+}
+
+.activity-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #2c2c2a;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.activity-sub {
+  font-size: 12px;
+  color: #888780;
+}
+
+.activity-chevron {
+  color: #888780;
+  font-size: 16px;
+  transition: transform 0.25s ease;
+}
+
+.activity-entry.open .activity-chevron {
+  transform: rotate(180deg);
+}
+
+.activity-diff {
+  padding: 0 14px 12px;
+  border-top: 0.5px solid rgba(0, 0, 0, 0.06);
+  padding-top: 10px;
+}
+
+.diff-line {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 13px;
+  color: #5f5e5a;
+  padding: 4px 0;
+}
+
+.diff-line .ti {
+  color: #f59e0b;
+  font-size: 15px;
+  margin-top: 1px;
+}
+
+.activity-open-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 8px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  background: rgba(245, 158, 11, 0.12);
+  color: #b45309;
+}
+
+/* ---------- What's new: variant toggle ---------- */
+
+.dash-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.whats-new-toggle {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #888780;
+  font-size: 16px;
+  padding: 4px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.whats-new-toggle:hover {
+  background: rgba(0, 0, 0, 0.04);
+}
+
+/* ---------- What's new: REDESIGN variant ---------- */
+
+.wn-separator {
+  height: 1px;
+  background: rgba(0, 0, 0, 0.08);
+  margin: 14px 0;
+}
+
+.wn-carousel {
+  display: flex;
+  align-items: stretch;
+  gap: 0;
+  margin-bottom: 6px;
+}
+
+.wn-arrow {
+  width: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #888780;
+  font-size: 18px;
+  flex-shrink: 0;
+  border-radius: 8px;
+}
+
+.wn-arrow:hover {
+  background: rgba(0, 0, 0, 0.04);
+}
+
+.wn-arrow.disabled {
+  opacity: 0.25;
+  pointer-events: none;
+}
+
+.wn-arrow-left {
+  margin-right: 4px;
+}
+
+.wn-arrow-right {
+  margin-left: 4px;
+}
+
+.wn-dots {
+  display: flex;
+  justify-content: center;
+  gap: 5px;
+  margin-bottom: 2px;
+}
+
+.wn-dot-ind {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.wn-dot-ind.active {
+  background: #5f5e5a;
+}
+
+.wn-counter {
+  text-align: center;
+  font-size: 11px;
+  color: #888780;
+}
+
+/* Shared card base */
+.wn-card {
+  flex: 1;
+  min-width: 0;
+  background: #ffffff;
+  border: 0.5px solid rgba(0, 0, 0, 0.15);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.wn-card-top-task {
+  border-top: 3px solid #3b82f6;
+}
+
+.wn-card-top-keep {
+  border-top: 3px solid #22c55e;
+}
+
+.wn-card-top-update {
+  border-top: 3px solid #f59e0b;
+}
+
+/* --- New item card --- */
+
+.wn-card-header {
+  padding: 10px 12px 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.wn-type {
+  font-size: 11px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.wn-type i {
+  font-size: 12px;
+}
+
+.wn-type-task {
+  color: #2563eb;
+}
+
+.wn-type-keep {
+  color: #16a34a;
+}
+
+.wn-dot {
+  color: #888780;
+  font-size: 11px;
+}
+
+.wn-source {
+  font-size: 11px;
+  color: #888780;
+}
+
+.wn-card-body {
+  padding: 8px 12px;
+}
+
+.wn-card-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #2c2c2a;
+  margin-bottom: 4px;
+}
+
+.wn-card-content {
+  font-size: 12px;
+  color: #5f5e5a;
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.wn-card-actions {
+  display: flex;
+  border-top: 0.5px solid rgba(0, 0, 0, 0.08);
+}
+
+.wn-btn {
+  flex: 1;
+  font-size: 12px;
+  padding: 9px 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  font-weight: 500;
+  font-family: inherit;
+}
+
+.wn-btn i {
+  font-size: 14px;
+}
+
+.wn-btn-approve {
+  color: #16a34a;
+}
+
+.wn-btn-edit {
+  color: #5f5e5a;
+}
+
+.wn-btn-discard {
+  color: #dc2626;
+}
+
+.wn-btn-view {
+  color: #d97706;
+}
+
+.wn-btn-dismiss {
+  color: #888780;
+}
+
+.wn-btn-divider {
+  width: 0.5px;
+  background: rgba(0, 0, 0, 0.08);
+}
+
+/* --- Update card --- */
+
+.wn-upd-header {
+  padding: 10px 12px;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.wn-upd-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  background: rgba(245, 158, 11, 0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.wn-upd-icon i {
+  font-size: 14px;
+  color: #f59e0b;
+}
+
+.wn-upd-meta {
+  flex: 1;
+  min-width: 0;
+}
+
+.wn-upd-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: #d97706;
+  margin-bottom: 2px;
+}
+
+.wn-upd-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #2c2c2a;
+}
+
+.wn-upd-summary {
+  font-size: 11px;
+  color: #888780;
+  margin-top: 2px;
+}
+
+.wn-upd-chevron {
+  font-size: 16px;
+  color: #888780;
+  margin-top: 4px;
+  transition: transform 0.2s ease;
+}
+
+.wn-upd-chevron.open {
+  transform: rotate(180deg);
+}
+
+.wn-upd-preview {
+  padding: 0 12px 10px;
+  font-size: 12px;
+  color: #5f5e5a;
+}
+
+/* Expanded detail */
+.wn-upd-detail {
+  border-top: 0.5px solid rgba(0, 0, 0, 0.06);
+}
+
+.wn-upd-diff {
+  padding: 8px 12px 4px;
+}
+
+.wn-diff-line {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  padding: 3px 0;
+  font-size: 12px;
+}
+
+.wn-diff-line i {
+  font-size: 13px;
+  color: #f59e0b;
+  margin-top: 1px;
+  flex-shrink: 0;
+}
+
+.wn-diff-old {
+  color: #888780;
+  text-decoration: line-through;
+}
+
+.wn-diff-arrow {
+  color: #888780;
+  font-size: 11px;
+}
+
+.wn-diff-new {
+  color: #2c2c2a;
+  font-weight: 500;
+}
+
+.wn-diff-added {
+  color: #d97706;
+  font-weight: 500;
+}
+
+.wn-diff-removed {
+  color: #888780;
+  text-decoration: line-through;
+}
+
+.wn-more-text {
+  font-size: 11px;
+  color: #888780;
+  padding: 3px 0;
+  margin-left: 19px;
+}
+
+.wn-upd-sources {
+  padding: 4px 12px 8px;
+}
+
+.wn-upd-sources-label {
+  font-size: 10px;
+  color: #888780;
+  margin-bottom: 5px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.wn-upd-sources-label i {
+  font-size: 11px;
+}
+
+.wn-source-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 8px;
+  background: rgba(0, 0, 0, 0.03);
+  border-radius: 7px;
+  border: 0.5px solid rgba(0, 0, 0, 0.06);
+  margin-bottom: 4px;
+}
+
+.wn-source-logo {
+  width: 22px;
+  height: 22px;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  flex-shrink: 0;
+  color: white;
+}
+
+.wn-source-logo.gmail {
+  background: #d93025;
+}
+
+.wn-source-logo.slack {
+  background: #4a154b;
+}
+
+.wn-source-logo.telegram {
+  background: #229ed9;
+}
+
+.wn-source-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.wn-source-app {
+  font-size: 11px;
+  font-weight: 500;
+  color: #2c2c2a;
+}
+
+.wn-source-snippet {
+  font-size: 10px;
+  color: #888780;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.wn-source-chevron {
+  font-size: 12px;
+  color: #888780;
+}
+
+/* ---------- Pinned row (horizontal mini-cards) ---------- */
+
+.pinned-row {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+  scrollbar-width: none;
+  margin-left: -20px;
+  margin-right: -20px;
+  padding-left: 20px;
+  padding-right: 20px;
+}
+
+.pinned-row::-webkit-scrollbar {
+  display: none;
+}
+
+.mini-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  min-width: 150px;
+  max-width: 170px;
+  padding: 12px;
+  background: #ffffff;
+  border: 0.5px solid rgba(0, 0, 0, 0.15);
+  border-radius: 12px;
+  cursor: pointer;
+  font-family: inherit;
+  text-align: left;
+  flex-shrink: 0;
+}
+
+.mini-task {
+  border-left: 3px solid rgba(59, 130, 246, 0.55);
+}
+
+.mini-keep {
+  border-left: 3px solid rgba(34, 197, 94, 0.55);
+}
+
+.mini-type {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.mini-type-task {
+  color: #3b82f6;
+}
+
+.mini-type-keep {
+  color: #16a34a;
+}
+
+.mini-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #2c2c2a;
+  line-height: 1.35;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.mini-date {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  color: #888780;
+}
+
+/* ---------- Card chips (New / Updated) ---------- */
+
+.card-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  flex-shrink: 0;
+  align-self: center;
+  margin-left: 8px;
+}
+
+.card-chip .ti {
+  font-size: 12px;
+}
+
+.chip-new-task {
+  background: rgba(59, 130, 246, 0.1);
+  color: #3b82f6;
+}
+
+.chip-new-keep {
+  background: rgba(34, 197, 94, 0.1);
+  color: #16a34a;
+}
+
+.chip-updated {
+  background: rgba(245, 158, 11, 0.12);
+  color: #b45309;
+}
+
+/* Sub-task added by an unseen LLM update — amber highlight */
+.subtask-added-by-update .subtask-label {
+  background: rgba(245, 158, 11, 0.12);
+  border-radius: 4px;
+  padding: 0 4px;
+}
+
+/* ---------- Category screens ---------- */
+
+.category-heading {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #2c2c2a;
+  margin-bottom: 14px;
+}
+
+.category-heading .ti {
+  font-size: 18px;
+  color: #4a6862;
+}
+
+.category-count {
+  font-size: 13px;
+  font-weight: 500;
+  color: #888780;
+}
+
+.notif-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* ---------- Dark theme overrides (v3 additions) ---------- */
+
+[data-theme="dark"] .dash-greeting-title {
+  color: #e5e3dc;
+}
+
+[data-theme="dark"] .dash-greeting-date,
+[data-theme="dark"] .drawer-group-label,
+[data-theme="dark"] .drawer-count {
+  color: #6b6963;
+}
+
+[data-theme="dark"] .dash-section-title {
+  color: #9c9a94;
+}
+
+[data-theme="dark"] .digest-card,
+[data-theme="dark"] .activity-entry,
+[data-theme="dark"] .mini-card {
+  background: #292826;
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+[data-theme="dark"] .activity-entry {
+  border-left-color: #fbbf24;
+}
+
+[data-theme="dark"] .cluster-logo {
+  border-color: #292826;
+}
+
+[data-theme="dark"] .digest-title,
+[data-theme="dark"] .activity-title,
+[data-theme="dark"] .mini-title,
+[data-theme="dark"] .category-heading {
+  color: #e5e3dc;
+}
+
+[data-theme="dark"] .digest-sub,
+[data-theme="dark"] .activity-sub,
+[data-theme="dark"] .mini-date,
+[data-theme="dark"] .category-count,
+[data-theme="dark"] .digest-chevron,
+[data-theme="dark"] .activity-chevron {
+  color: #6b6963;
+}
+
+[data-theme="dark"] .digest-body-inner,
+[data-theme="dark"] .activity-diff {
+  border-top-color: rgba(255, 255, 255, 0.06);
+}
+
+[data-theme="dark"] .digest-view-all {
+  color: #6da89f;
+}
+
+[data-theme="dark"] .digest-dismiss {
+  color: #ef5350;
+  border-bottom-color: rgba(255, 255, 255, 0.08);
+}
+
+[data-theme="dark"] .digest-caught-up-icon {
+  color: #4ade80;
+}
+
+[data-theme="dark"] .digest-caught-up-text {
+  color: #a8a69e;
+}
+
+[data-theme="dark"] .diff-line {
+  color: #9c9a94;
+}
+
+[data-theme="dark"] .diff-line .ti,
+[data-theme="dark"] .activity-icon {
+  color: #fbbf24;
+}
+
+[data-theme="dark"] .activity-icon,
+[data-theme="dark"] .activity-open-btn,
+[data-theme="dark"] .chip-updated,
+[data-theme="dark"] .subtask-added-by-update .subtask-label {
+  background: rgba(245, 158, 11, 0.15);
+}
+
+[data-theme="dark"] .activity-open-btn,
+[data-theme="dark"] .chip-updated {
+  color: #fbbf24;
+}
+
+[data-theme="dark"] .new-chip-task,
+[data-theme="dark"] .chip-new-task,
+[data-theme="dark"] .mini-type-task {
+  color: #60a5fa;
+}
+
+[data-theme="dark"] .new-chip-keep,
+[data-theme="dark"] .chip-new-keep,
+[data-theme="dark"] .mini-type-keep {
+  color: #4ade80;
+}
+
+[data-theme="dark"] .new-chip-task,
+[data-theme="dark"] .chip-new-task {
+  background: rgba(59, 130, 246, 0.15);
+}
+
+[data-theme="dark"] .new-chip-keep,
+[data-theme="dark"] .chip-new-keep {
+  background: rgba(34, 197, 94, 0.15);
+}
+
+/* --- Redesign dark mode --- */
+
+[data-theme="dark"] .whats-new-toggle {
+  color: #6b6963;
+}
+
+[data-theme="dark"] .whats-new-toggle:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+[data-theme="dark"] .wn-separator {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+[data-theme="dark"] .wn-arrow {
+  color: #6b6963;
+}
+
+[data-theme="dark"] .wn-arrow:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+[data-theme="dark"] .wn-dot-ind {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+[data-theme="dark"] .wn-dot-ind.active {
+  background: #9c9a94;
+}
+
+[data-theme="dark"] .wn-counter {
+  color: #6b6963;
+}
+
+[data-theme="dark"] .wn-card {
+  background: #292826;
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+[data-theme="dark"] .wn-card-top-update {
+  border-top-color: #fbbf24;
+}
+
+[data-theme="dark"] .wn-card-title,
+[data-theme="dark"] .wn-upd-title,
+[data-theme="dark"] .wn-source-app {
+  color: #e5e3dc;
+}
+
+[data-theme="dark"] .wn-card-content,
+[data-theme="dark"] .wn-upd-preview {
+  color: #9c9a94;
+}
+
+[data-theme="dark"] .wn-source,
+[data-theme="dark"] .wn-dot,
+[data-theme="dark"] .wn-upd-summary,
+[data-theme="dark"] .wn-upd-chevron,
+[data-theme="dark"] .wn-source-snippet,
+[data-theme="dark"] .wn-source-chevron,
+[data-theme="dark"] .wn-upd-sources-label,
+[data-theme="dark"] .wn-more-text {
+  color: #6b6963;
+}
+
+[data-theme="dark"] .wn-card-actions,
+[data-theme="dark"] .wn-btn-divider {
+  border-color: rgba(255, 255, 255, 0.06);
+}
+
+[data-theme="dark"] .wn-upd-detail {
+  border-top-color: rgba(255, 255, 255, 0.06);
+}
+
+[data-theme="dark"] .wn-type-task {
+  color: #60a5fa;
+}
+
+[data-theme="dark"] .wn-type-keep {
+  color: #4ade80;
+}
+
+[data-theme="dark"] .wn-btn-approve {
+  color: #4ade80;
+}
+
+[data-theme="dark"] .wn-btn-edit {
+  color: #9c9a94;
+}
+
+[data-theme="dark"] .wn-btn-discard {
+  color: #ef5350;
+}
+
+[data-theme="dark"] .wn-btn-view {
+  color: #fbbf24;
+}
+
+[data-theme="dark"] .wn-btn-dismiss {
+  color: #6b6963;
+}
+
+[data-theme="dark"] .wn-upd-label {
+  color: #fbbf24;
+}
+
+[data-theme="dark"] .wn-upd-icon {
+  background: rgba(245, 158, 11, 0.15);
+}
+
+[data-theme="dark"] .wn-upd-icon i {
+  color: #fbbf24;
+}
+
+[data-theme="dark"] .wn-diff-line i {
+  color: #fbbf24;
+}
+
+[data-theme="dark"] .wn-diff-new {
+  color: #e5e3dc;
+}
+
+[data-theme="dark"] .wn-diff-old,
+[data-theme="dark"] .wn-diff-arrow {
+  color: #6b6963;
+}
+
+[data-theme="dark"] .wn-diff-added {
+  color: #fbbf24;
+}
+
+[data-theme="dark"] .wn-source-row {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.06);
+}
+
+/* Cluster logos reuse the notification logo colors */
+.cluster-logo.slack {
+  background: #4a154b;
+}
+
+.cluster-logo.telegram {
+  background: #229ed9;
+}
+
+.cluster-logo.gmail {
+  background: #d93025;
+}

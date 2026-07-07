@@ -1,0 +1,427 @@
+<!doctype html>
+<!--
+  Noti v3 — "Dashboard" concept — main app shell
+  ===============================================
+  Home is a dashboard (summary digest, What's new activity feed,
+  Pinned row) instead of a raw notification inbox. Notifications
+  moved to the drawer under Primary / Social categories.
+
+  All card markup is rendered dynamically from data.js by render.js.
+  This file contains only the structural shell:
+    - Phone frame + app viewport
+    - Top bar + drawer (with notification categories)
+    - Dashboard screen (section shells — JS fills the bodies)
+    - Edit screen template (JS populates fields per-card)
+    - Tasks / Keep screens, category screens, placeholders
+    - Bottom tab bar (Home / Tasks / Keep)
+
+  Script load order matters (no modules, shared globals):
+    1. data.js   — AppData, UIState, DataHelpers
+    2. render.js — Render object (reads data, writes DOM)
+    3. app.js    — event wiring (reads both, orchestrates)
+-->
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Noti-v3</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <!-- Theme toggle (outside phone frame, desktop only) -->
+    <div class="theme-toggle-wrap">
+      <button
+        class="theme-toggle"
+        id="themeToggle"
+        aria-label="Toggle dark mode"
+      >
+        <i class="ti ti-moon icon-light"></i>
+        <i class="ti ti-sun icon-dark"></i>
+      </button>
+    </div>
+
+    <div class="phone-frame">
+      <div class="app-viewport">
+        <!-- ============ DRAWER ============ -->
+        <div class="drawer-overlay"></div>
+        <nav class="drawer">
+          <div class="drawer-brand">
+            <span class="drawer-logo">N</span>
+            <span class="drawer-app-name">Noti</span>
+          </div>
+
+          <div class="drawer-nav-top">
+            <button class="drawer-item" data-target="home">
+              <i class="ti ti-home"></i><span>Home</span>
+            </button>
+
+            <div class="drawer-group-label">Notifications</div>
+            <button class="drawer-item" data-target="primary">
+              <i class="ti ti-inbox"></i><span>Primary</span>
+              <span class="drawer-count" data-drawer-count="primary"></span>
+            </button>
+            <button class="drawer-item" data-target="social">
+              <i class="ti ti-messages"></i><span>Social</span>
+              <span class="drawer-count" data-drawer-count="social"></span>
+            </button>
+
+            <div class="drawer-group-label">More</div>
+            <button class="drawer-item" data-target="reminders">
+              <i class="ti ti-bell-ringing"></i><span>Reminders</span>
+            </button>
+            <button class="drawer-item" data-target="preferences">
+              <i class="ti ti-adjustments-horizontal"></i
+              ><span>Preferences</span>
+            </button>
+            <button class="drawer-item" data-target="history">
+              <i class="ti ti-history"></i><span>History</span>
+            </button>
+          </div>
+
+          <div class="drawer-nav-bottom">
+            <button class="drawer-item" data-target="about">
+              <i class="ti ti-user-circle"></i><span>About Me</span>
+            </button>
+            <button class="drawer-item" data-target="settings">
+              <i class="ti ti-settings"></i><span>Settings</span>
+            </button>
+          </div>
+        </nav>
+
+        <!-- ============ TOP BAR ============ -->
+        <header class="top-bar">
+          <button class="chrome-icon" aria-label="Menu">
+            <i class="ti ti-menu-2"></i>
+          </button>
+          <h1 class="app-name">Noti</h1>
+          <button class="chrome-icon" aria-label="Search">
+            <i class="ti ti-search"></i>
+          </button>
+        </header>
+
+        <!-- ============ SCREEN CONTAINER ============ -->
+        <main class="screen-container">
+          <!-- ====== HOME (DASHBOARD) SCREEN ====== -->
+          <section class="screen" data-screen="home">
+            <!-- Greeting -->
+            <div class="dash-greeting">
+              <h2 class="dash-greeting-title"><!-- JS: Good afternoon --></h2>
+              <p class="dash-greeting-date"><!-- JS: Monday, July 7 --></p>
+            </div>
+
+            <!-- Notification Summary (MD3 digest card) -->
+            <div class="dash-section" data-dash="summary">
+              <div class="digest-card">
+                <button class="digest-header" aria-label="Toggle summary">
+                  <div class="digest-icon-cluster">
+                    <!-- JS: up to 3 app logos -->
+                  </div>
+                  <div class="digest-text">
+                    <span class="digest-title"
+                      ><!-- JS: Your Afternoon Summary --></span
+                    >
+                    <span class="digest-sub"><!-- JS: 6 notifications --></span>
+                  </div>
+                  <i class="ti ti-chevron-down digest-chevron"></i>
+                </button>
+                <div class="digest-body">
+                  <div class="digest-body-inner">
+                    <!-- JS: up to 5 recent notification cards -->
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- What's new (LLM activity) -->
+            <div class="dash-section" data-dash="activity">
+              <header class="dash-section-header">
+                <h3 class="dash-section-title">
+                  <i class="ti ti-sparkles"></i> What's new
+                </h3>
+                <button class="whats-new-toggle" aria-label="Switch layout variant">
+                  <i class="ti ti-arrows-exchange"></i>
+                </button>
+              </header>
+              <!-- Original variant -->
+              <div class="whats-new-original">
+                <div class="new-chips">
+                  <!-- JS: count chips (blue tasks / green keep) -->
+                </div>
+                <div class="activity-feed">
+                  <!-- JS: amber update entries with expandable diffs -->
+                </div>
+              </div>
+              <!-- Redesign variant -->
+              <div class="whats-new-redesign" hidden>
+                <div class="wn-new-section">
+                  <!-- JS: single new-item card with arrows -->
+                </div>
+                <div class="wn-separator"></div>
+                <div class="wn-update-section">
+                  <!-- JS: single update card with arrows -->
+                </div>
+              </div>
+            </div>
+
+            <!-- Pinned -->
+            <div class="dash-section" data-dash="pinned">
+              <header class="dash-section-header">
+                <h3 class="dash-section-title">
+                  <i class="ti ti-pin"></i> Pinned
+                </h3>
+              </header>
+              <div class="pinned-row">
+                <!-- JS: horizontal mini-cards -->
+              </div>
+            </div>
+          </section>
+
+          <!-- ====== PRIMARY NOTIFICATIONS SCREEN ====== -->
+          <section class="screen" data-screen="primary" hidden>
+            <div class="category-heading">
+              <i class="ti ti-inbox"></i>
+              <span>Primary</span>
+              <span class="category-count" data-category-count="primary"></span>
+            </div>
+            <div class="notif-list" data-category="primary">
+              <!-- rendered by JS -->
+            </div>
+          </section>
+
+          <!-- ====== SOCIAL NOTIFICATIONS SCREEN ====== -->
+          <section class="screen" data-screen="social" hidden>
+            <div class="category-heading">
+              <i class="ti ti-messages"></i>
+              <span>Social</span>
+              <span class="category-count" data-category-count="social"></span>
+            </div>
+            <div class="notif-list" data-category="social">
+              <!-- rendered by JS -->
+            </div>
+          </section>
+
+          <!-- ====== EDIT SCREEN (template — JS populates per-card) ====== -->
+          <section class="screen" data-screen="edit-task" hidden>
+            <header class="edit-header notion-header">
+              <button class="chrome-icon back-btn" aria-label="Back">
+                <i class="ti ti-arrow-left"></i>
+              </button>
+              <h2
+                class="edit-title notion-title"
+                contenteditable="true"
+                data-placeholder="Untitled"
+              ></h2>
+              <div class="edit-menu-wrap">
+                <button
+                  class="chrome-icon edit-more-trigger"
+                  aria-label="More options"
+                >
+                  <i class="ti ti-dots-vertical"></i>
+                </button>
+                <button class="chrome-icon confirm-btn" aria-label="Confirm">
+                  <i class="ti ti-check"></i>
+                </button>
+                <div class="edit-dropdown" hidden>
+                  <button class="dropdown-item">
+                    <i class="ti ti-refresh"></i> Regenerate Reminder
+                  </button>
+                  <button class="dropdown-item text-danger">
+                    <i class="ti ti-trash"></i> Delete
+                  </button>
+                </div>
+              </div>
+            </header>
+
+            <div class="state-toggle-row">
+              <button class="state-chip" data-state="task">
+                <i class="ti ti-square-check"></i> Task
+              </button>
+              <button class="state-chip" data-state="keep">
+                <i class="ti ti-bookmark"></i> Keep
+              </button>
+            </div>
+
+            <div class="notion-body">
+              <div class="property-list">
+                <div class="property-row">
+                  <div class="property-label">
+                    <i class="ti ti-calendar-event"></i> Date
+                  </div>
+                  <div class="property-value">
+                    <input type="date" class="invisible-input" />
+                  </div>
+                </div>
+                <div class="property-row">
+                  <div class="property-label">
+                    <i class="ti ti-clock"></i> Time
+                  </div>
+                  <div class="property-value">
+                    <input type="time" class="invisible-input" />
+                  </div>
+                </div>
+              </div>
+
+              <div class="content-section">
+                <textarea
+                  class="invisible-textarea description-area"
+                  placeholder="Add description..."
+                ></textarea>
+              </div>
+
+              <div class="subtasks-section">
+                <!-- rendered by JS per-card -->
+              </div>
+            </div>
+
+            <div class="utilities-section">
+              <div class="utility-chips">
+                <button class="util-chip">
+                  <i class="ti ti-bell"></i> Create reminder
+                </button>
+                <button class="util-chip">
+                  <i class="ti ti-circle-check"></i> Export to Google Tasks
+                </button>
+                <div class="util-menu-wrap">
+                  <button class="util-chip cal-export-trigger">
+                    <i class="ti ti-calendar"></i> Export to Calendar
+                  </button>
+                  <div class="cal-dropdown" hidden>
+                    <button class="dropdown-item">
+                      <i class="ti ti-brand-google"></i> Google Calendar
+                    </button>
+                    <button class="dropdown-item">
+                      <i class="ti ti-device-mobile"></i> System Calendar
+                    </button>
+                  </div>
+                </div>
+                <button class="util-chip">
+                  <i class="ti ti-share"></i> Share
+                </button>
+              </div>
+            </div>
+          </section>
+
+          <!-- ====== TASKS SCREEN ====== -->
+          <section class="screen" data-screen="tasks" hidden>
+            <div class="filter-chip-row" data-filter-section="tasks">
+              <button class="filter-chip active" data-filter="active">
+                <i class="ti ti-progress"></i> Active
+              </button>
+              <button class="filter-chip" data-filter="completed">
+                <i class="ti ti-circle-check"></i> Completed
+              </button>
+            </div>
+            <div class="saved-body saved-tasks-body" data-source="savedTasks">
+              <!-- rendered by JS from AppData.savedTasks -->
+            </div>
+          </section>
+
+          <!-- ====== KEEP SCREEN ====== -->
+          <section class="screen" data-screen="keep" hidden>
+            <div class="filter-chip-row" data-filter-section="keep">
+              <button class="filter-chip active" data-filter="saved">
+                <i class="ti ti-bookmark"></i> Saved
+              </button>
+              <button class="filter-chip" data-filter="archived">
+                <i class="ti ti-archive"></i> Archived
+              </button>
+            </div>
+            <div class="saved-body saved-keep-body" data-source="savedKeep">
+              <!-- rendered by JS from AppData.savedKeep -->
+            </div>
+          </section>
+
+          <!-- ====== REMINDERS SCREEN (placeholder) ====== -->
+          <section class="screen" data-screen="reminders" hidden>
+            <div class="screen-placeholder">
+              <i class="ti ti-bell-ringing"></i>
+              <h2>Reminders</h2>
+              <p>Your upcoming reminders will appear here.</p>
+            </div>
+          </section>
+
+          <!-- ====== PREFERENCES SCREEN (placeholder) ====== -->
+          <section class="screen" data-screen="preferences" hidden>
+            <div class="screen-placeholder">
+              <i class="ti ti-adjustments-horizontal"></i>
+              <h2>Preferences</h2>
+              <p>Customize how Noti works for you.</p>
+            </div>
+          </section>
+
+          <!-- ====== HISTORY SCREEN (placeholder) ====== -->
+          <section class="screen" data-screen="history" hidden>
+            <div class="screen-placeholder">
+              <i class="ti ti-history"></i>
+              <h2>History</h2>
+              <p>Previously triaged items will show up here.</p>
+            </div>
+          </section>
+
+          <!-- ====== ABOUT ME SCREEN (placeholder) ====== -->
+          <section class="screen" data-screen="about" hidden>
+            <div class="screen-placeholder">
+              <i class="ti ti-user-circle"></i>
+              <h2>About Me</h2>
+              <p>Your profile and account info.</p>
+            </div>
+          </section>
+
+          <!-- ====== SETTINGS SCREEN (placeholder) ====== -->
+          <section class="screen" data-screen="settings" hidden>
+            <div class="screen-placeholder">
+              <i class="ti ti-settings"></i>
+              <h2>Settings</h2>
+              <p>App configuration and data management.</p>
+            </div>
+          </section>
+        </main>
+
+        <!-- ============ TOAST ============ -->
+        <div class="toast" hidden></div>
+
+        <!-- ============ BOTTOM TAB BAR ============ -->
+        <nav class="bottom-bar">
+          <button class="nav-tab active" data-target="home">
+            <span class="nav-icon-wrap">
+              <i class="ti ti-home"></i>
+              <span class="nav-badge badge-red" data-badge="home" hidden></span>
+            </span>
+            <span class="nav-label">Home</span>
+          </button>
+          <button class="nav-tab" data-target="tasks">
+            <span class="nav-icon-wrap">
+              <i class="ti ti-checklist"></i>
+              <span
+                class="nav-badge badge-blue"
+                data-badge="tasks"
+                hidden
+              ></span>
+            </span>
+            <span class="nav-label">Tasks</span>
+          </button>
+          <button class="nav-tab" data-target="keep">
+            <span class="nav-icon-wrap">
+              <i class="ti ti-bookmark"></i>
+              <span
+                class="nav-badge badge-green"
+                data-badge="keep"
+                hidden
+              ></span>
+            </span>
+            <span class="nav-label">Keep</span>
+          </button>
+        </nav>
+      </div>
+    </div>
+
+    <!-- Script load order: data → render → behavior -->
+    <script src="data.js"></script>
+    <script src="render.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>
