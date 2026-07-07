@@ -206,8 +206,11 @@ var Render = (function () {
   function renderGreeting() {
     var titleEl = document.querySelector(".dash-greeting-title");
     var dateEl = document.querySelector(".dash-greeting-date");
+    var userName = "Tim"; // placeholder user name
+
     if (titleEl) {
-      titleEl.textContent = "Good " + DataHelpers.dayPart().toLowerCase();
+      titleEl.textContent =
+        "Good " + DataHelpers.dayPart().toLowerCase() + ", " + userName;
     }
     if (dateEl) {
       var now = new Date();
@@ -305,9 +308,13 @@ var Render = (function () {
     var card = document.querySelector(".digest-card");
     var body = document.querySelector(".digest-body");
     if (card && body) {
-      var open = UIState.dashboard.summaryDismissed || UIState.dashboard.summaryExpanded;
+      var open =
+        UIState.dashboard.summaryDismissed || UIState.dashboard.summaryExpanded;
       card.classList.toggle("open", open);
-      card.classList.toggle("dismissed-state", UIState.dashboard.summaryDismissed);
+      card.classList.toggle(
+        "dismissed-state",
+        UIState.dashboard.summaryDismissed,
+      );
       body.style.height = open ? "auto" : "0px";
     }
   }
@@ -445,32 +452,54 @@ var Render = (function () {
     sourceText = isTask ? "LLM extraction" : "LLM extraction";
 
     return (
-      '<div class="wn-card ' + typeClass + '">' +
-        '<div class="wn-card-header">' +
-          '<span class="wn-type ' + typeChipClass + '">' +
-            '<i class="ti ' + typeIcon + '"></i> ' + typeLabel +
-          '</span>' +
-          '<span class="wn-dot">&middot;</span>' +
-          '<span class="wn-source">' + esc(sourceText) + '</span>' +
-        '</div>' +
-        '<div class="wn-card-body">' +
-          '<div class="wn-card-title">' + esc(item.title) + '</div>' +
-          '<div class="wn-card-content">' + esc(item.contents) + '</div>' +
-        '</div>' +
-        '<div class="wn-card-actions">' +
-          '<button class="wn-btn wn-btn-approve" data-item-id="' + item.id +
-            '" data-source="' + entry.section + '">' +
-            '<i class="ti ti-check"></i> Approve</button>' +
-          '<div class="wn-btn-divider"></div>' +
-          '<button class="wn-btn wn-btn-edit" data-item-id="' + item.id +
-            '" data-source="' + entry.section + '">' +
-            '<i class="ti ti-pencil"></i> Edit</button>' +
-          '<div class="wn-btn-divider"></div>' +
-          '<button class="wn-btn wn-btn-discard" data-item-id="' + item.id +
-            '" data-source="' + entry.section + '">' +
-            '<i class="ti ti-x"></i> Discard</button>' +
-        '</div>' +
-      '</div>'
+      '<div class="wn-card ' +
+      typeClass +
+      '">' +
+      '<div class="wn-card-header">' +
+      '<span class="wn-type ' +
+      typeChipClass +
+      '">' +
+      '<i class="ti ' +
+      typeIcon +
+      '"></i> ' +
+      typeLabel +
+      "</span>" +
+      '<span class="wn-dot">&middot;</span>' +
+      '<span class="wn-source">' +
+      esc(sourceText) +
+      "</span>" +
+      "</div>" +
+      '<div class="wn-card-body">' +
+      '<div class="wn-card-title">' +
+      esc(item.title) +
+      "</div>" +
+      '<div class="wn-card-content">' +
+      esc(item.contents) +
+      "</div>" +
+      "</div>" +
+      '<div class="wn-card-actions">' +
+      '<button class="wn-btn wn-btn-approve" data-item-id="' +
+      item.id +
+      '" data-source="' +
+      entry.section +
+      '">' +
+      '<i class="ti ti-check"></i> Approve</button>' +
+      '<div class="wn-btn-divider"></div>' +
+      '<button class="wn-btn wn-btn-edit" data-item-id="' +
+      item.id +
+      '" data-source="' +
+      entry.section +
+      '">' +
+      '<i class="ti ti-pencil"></i> Edit</button>' +
+      '<div class="wn-btn-divider"></div>' +
+      '<button class="wn-btn wn-btn-discard" data-item-id="' +
+      item.id +
+      '" data-source="' +
+      entry.section +
+      '">' +
+      '<i class="ti ti-x"></i> Discard</button>' +
+      "</div>" +
+      "</div>"
     );
   }
 
@@ -491,129 +520,175 @@ var Render = (function () {
     var visibleChanges = changes.slice(0, MAX_DIFF_LINES);
     var extraChanges = changes.length - MAX_DIFF_LINES;
 
-    var diffHTML = visibleChanges.map(function (c) {
-      if (c.type === "date") {
-        return (
-          '<div class="wn-diff-line">' +
+    var diffHTML = visibleChanges
+      .map(function (c) {
+        if (c.type === "date") {
+          return (
+            '<div class="wn-diff-line">' +
             '<i class="ti ti-calendar-event"></i>' +
-            '<span><span class="wn-diff-old">' + esc(c.from) + '</span> ' +
+            '<span><span class="wn-diff-old">' +
+            esc(c.from) +
+            "</span> " +
             '<span class="wn-diff-arrow">→</span> ' +
-            '<span class="wn-diff-new">' + esc(c.to) + '</span></span>' +
-          '</div>'
-        );
-      }
-      if (c.type === "subtask-added") {
-        return (
-          '<div class="wn-diff-line">' +
+            '<span class="wn-diff-new">' +
+            esc(c.to) +
+            "</span></span>" +
+            "</div>"
+          );
+        }
+        if (c.type === "subtask-added") {
+          return (
+            '<div class="wn-diff-line">' +
             '<i class="ti ti-plus"></i>' +
-            '<span class="wn-diff-added">+ ' + esc(c.label) + '</span>' +
-          '</div>'
-        );
-      }
-      if (c.type === "subtask-removed") {
+            '<span class="wn-diff-added">+ ' +
+            esc(c.label) +
+            "</span>" +
+            "</div>"
+          );
+        }
+        if (c.type === "subtask-removed") {
+          return (
+            '<div class="wn-diff-line">' +
+            '<i class="ti ti-minus"></i>' +
+            '<span class="wn-diff-removed">- ' +
+            esc(c.label) +
+            "</span>" +
+            "</div>"
+          );
+        }
         return (
           '<div class="wn-diff-line">' +
-            '<i class="ti ti-minus"></i>' +
-            '<span class="wn-diff-removed">- ' + esc(c.label) + '</span>' +
-          '</div>'
-        );
-      }
-      return (
-        '<div class="wn-diff-line">' +
           '<i class="ti ti-edit"></i>' +
-          '<span>' + esc(DataHelpers.describeChange(c)) + '</span>' +
-        '</div>'
-      );
-    }).join("");
+          "<span>" +
+          esc(DataHelpers.describeChange(c)) +
+          "</span>" +
+          "</div>"
+        );
+      })
+      .join("");
 
     if (extraChanges > 0) {
       diffHTML +=
-        '<div class="wn-more-text">+' + extraChanges +
-        ' more ' + (extraChanges === 1 ? 'change' : 'changes') + '</div>';
+        '<div class="wn-more-text">+' +
+        extraChanges +
+        " more " +
+        (extraChanges === 1 ? "change" : "changes") +
+        "</div>";
     }
 
     // Build source rows (capped)
     var visibleSources = sources.slice(0, MAX_SOURCES);
     var extraSources = sources.length - MAX_SOURCES;
 
-    var sourcesHTML = visibleSources.map(function (src) {
-      var notif = DataHelpers.findNotification(src.notifId);
-      var logoClass = notif ? notif.logoClass : "";
-      var icon = notif ? notif.icon : "ti-bell";
-      var subtitle = notif ? notif.subtitle : src.app;
-      var snippet = notif ? notif.contents.substring(0, 60) + "..." : "";
+    var sourcesHTML = visibleSources
+      .map(function (src) {
+        var notif = DataHelpers.findNotification(src.notifId);
+        var logoClass = notif ? notif.logoClass : "";
+        var icon = notif ? notif.icon : "ti-bell";
+        var subtitle = notif ? notif.subtitle : src.app;
+        var snippet = notif ? notif.contents.substring(0, 60) + "..." : "";
 
-      return (
-        '<div class="wn-source-row" data-notif-id="' + src.notifId + '">' +
-          '<div class="wn-source-logo ' + logoClass + '">' +
-            '<i class="ti ' + icon + '"></i>' +
-          '</div>' +
+        return (
+          '<div class="wn-source-row" data-notif-id="' +
+          src.notifId +
+          '">' +
+          '<div class="wn-source-logo ' +
+          logoClass +
+          '">' +
+          '<i class="ti ' +
+          icon +
+          '"></i>' +
+          "</div>" +
           '<div class="wn-source-text">' +
-            '<div class="wn-source-app">' + subtitle + '</div>' +
-            '<div class="wn-source-snippet">' + esc(snippet) + '</div>' +
-          '</div>' +
+          '<div class="wn-source-app">' +
+          subtitle +
+          "</div>" +
+          '<div class="wn-source-snippet">' +
+          esc(snippet) +
+          "</div>" +
+          "</div>" +
           '<i class="ti ti-chevron-right wn-source-chevron"></i>' +
-        '</div>'
-      );
-    }).join("");
+          "</div>"
+        );
+      })
+      .join("");
 
     if (extraSources > 0) {
       sourcesHTML +=
-        '<div class="wn-more-text">+' + extraSources +
-        ' more ' + (extraSources === 1 ? 'source' : 'sources') + '</div>';
+        '<div class="wn-more-text">+' +
+        extraSources +
+        " more " +
+        (extraSources === 1 ? "source" : "sources") +
+        "</div>";
     }
 
     return (
-      '<div class="wn-card wn-card-top-update" data-item-id="' + item.id + '" data-source="savedTasks">' +
-        '<div class="wn-upd-header">' +
-          '<div class="wn-upd-icon"><i class="ti ti-refresh"></i></div>' +
-          '<div class="wn-upd-meta">' +
-            '<div class="wn-upd-label">Task updated</div>' +
-            '<div class="wn-upd-title">' + esc(item.title) + '</div>' +
-            '<div class="wn-upd-summary">' +
-              esc(latest.time) + ' &middot; ' +
-              changeCount + (changeCount === 1 ? ' change' : ' changes') + ' &middot; ' +
-              sourceCount + (sourceCount === 1 ? ' source' : ' sources') +
-            '</div>' +
-          '</div>' +
-          '<i class="ti ti-chevron-down wn-upd-chevron' + (isOpen ? ' open' : '') + '"></i>' +
-        '</div>' +
-        // Collapsed preview
-        (isOpen ? '' :
-          '<div class="wn-upd-preview">' + esc(previewText) + '</div>'
-        ) +
-        // Expanded detail
-        (isOpen ?
-          '<div class="wn-upd-detail">' +
-            '<div class="wn-upd-diff">' + diffHTML + '</div>' +
-            '<div class="wn-upd-sources">' +
-              '<div class="wn-upd-sources-label">' +
-                '<i class="ti ti-link"></i> Triggered by ' +
-                sourceCount + (sourceCount === 1 ? ' notification' : ' notifications') +
-              '</div>' +
-              sourcesHTML +
-            '</div>' +
-          '</div>'
-        : '') +
-        '<div class="wn-card-actions">' +
-          '<button class="wn-btn wn-btn-view" data-item-id="' + item.id +
-            '" data-source="savedTasks">' +
-            '<i class="ti ti-arrow-right"></i> View task</button>' +
-          '<div class="wn-btn-divider"></div>' +
-          '<button class="wn-btn wn-btn-dismiss" data-item-id="' + item.id +
-            '" data-source="savedTasks">' +
-            '<i class="ti ti-check"></i> Dismiss</button>' +
-        '</div>' +
-      '</div>'
+      '<div class="wn-card wn-card-top-update" data-item-id="' +
+      item.id +
+      '" data-source="savedTasks">' +
+      '<div class="wn-upd-header">' +
+      '<div class="wn-upd-icon"><i class="ti ti-refresh"></i></div>' +
+      '<div class="wn-upd-meta">' +
+      '<div class="wn-upd-label">Task updated</div>' +
+      '<div class="wn-upd-title">' +
+      esc(item.title) +
+      "</div>" +
+      '<div class="wn-upd-summary">' +
+      esc(latest.time) +
+      " &middot; " +
+      changeCount +
+      (changeCount === 1 ? " change" : " changes") +
+      " &middot; " +
+      sourceCount +
+      (sourceCount === 1 ? " source" : " sources") +
+      "</div>" +
+      "</div>" +
+      '<i class="ti ti-chevron-down wn-upd-chevron' +
+      (isOpen ? " open" : "") +
+      '"></i>' +
+      "</div>" +
+      // Collapsed preview
+      (isOpen
+        ? ""
+        : '<div class="wn-upd-preview">' + esc(previewText) + "</div>") +
+      // Expanded detail
+      (isOpen
+        ? '<div class="wn-upd-detail">' +
+          '<div class="wn-upd-diff">' +
+          diffHTML +
+          "</div>" +
+          '<div class="wn-upd-sources">' +
+          '<div class="wn-upd-sources-label">' +
+          '<i class="ti ti-link"></i> Triggered by ' +
+          sourceCount +
+          (sourceCount === 1 ? " notification" : " notifications") +
+          "</div>" +
+          sourcesHTML +
+          "</div>" +
+          "</div>"
+        : "") +
+      '<div class="wn-card-actions">' +
+      '<button class="wn-btn wn-btn-view" data-item-id="' +
+      item.id +
+      '" data-source="savedTasks">' +
+      '<i class="ti ti-arrow-right"></i> View task</button>' +
+      '<div class="wn-btn-divider"></div>' +
+      '<button class="wn-btn wn-btn-dismiss" data-item-id="' +
+      item.id +
+      '" data-source="savedTasks">' +
+      '<i class="ti ti-check"></i> Dismiss</button>' +
+      "</div>" +
+      "</div>"
     );
   }
 
   function dotsHTML(total, active) {
     var html = '<div class="wn-dots">';
     for (var i = 0; i < total; i++) {
-      html += '<div class="wn-dot-ind' + (i === active ? ' active' : '') + '"></div>';
+      html +=
+        '<div class="wn-dot-ind' + (i === active ? " active" : "") + '"></div>';
     }
-    html += '</div>';
+    html += "</div>";
     return html;
   }
 
@@ -636,16 +711,22 @@ var Render = (function () {
       var entry = newItems[ni];
       newSection.innerHTML =
         '<div class="wn-carousel">' +
-          '<button class="wn-arrow wn-arrow-left' + (ni === 0 ? ' disabled' : '') +
-            '" data-dir="prev" data-carousel="new">' +
-            '<i class="ti ti-chevron-left"></i></button>' +
-          newItemCardHTML(entry, ni, newItems.length) +
-          '<button class="wn-arrow wn-arrow-right' + (ni >= newItems.length - 1 ? ' disabled' : '') +
-            '" data-dir="next" data-carousel="new">' +
-            '<i class="ti ti-chevron-right"></i></button>' +
-        '</div>' +
+        '<button class="wn-arrow wn-arrow-left' +
+        (ni === 0 ? " disabled" : "") +
+        '" data-dir="prev" data-carousel="new">' +
+        '<i class="ti ti-chevron-left"></i></button>' +
+        newItemCardHTML(entry, ni, newItems.length) +
+        '<button class="wn-arrow wn-arrow-right' +
+        (ni >= newItems.length - 1 ? " disabled" : "") +
+        '" data-dir="next" data-carousel="new">' +
+        '<i class="ti ti-chevron-right"></i></button>' +
+        "</div>" +
         dotsHTML(newItems.length, ni) +
-        '<div class="wn-counter">' + (ni + 1) + ' of ' + newItems.length + ' awaiting review</div>';
+        '<div class="wn-counter">' +
+        (ni + 1) +
+        " of " +
+        newItems.length +
+        " awaiting review</div>";
     }
 
     // --- Update cards carousel ---
@@ -655,28 +736,35 @@ var Render = (function () {
     UIState.dashboard.updateIndex = ui;
 
     if (updated.length === 0 && newItems.length === 0) {
-      newSection.innerHTML = '<div class="section-empty">You\'re all caught up</div>';
-      updateSection.innerHTML = '';
+      newSection.innerHTML =
+        '<div class="section-empty">You\'re all caught up</div>';
+      updateSection.innerHTML = "";
       if (separator) separator.hidden = true;
     } else if (updated.length === 0) {
-      updateSection.innerHTML = '';
+      updateSection.innerHTML = "";
       if (separator) separator.hidden = true;
     } else {
       if (separator) separator.hidden = false;
       var item = updated[ui];
       updateSection.innerHTML =
         '<div class="wn-carousel">' +
-          '<button class="wn-arrow wn-arrow-left' + (ui === 0 ? ' disabled' : '') +
-            '" data-dir="prev" data-carousel="update">' +
-            '<i class="ti ti-chevron-left"></i></button>' +
-          updateCardHTML(item) +
-          '<button class="wn-arrow wn-arrow-right' + (ui >= updated.length - 1 ? ' disabled' : '') +
-            '" data-dir="next" data-carousel="update">' +
-            '<i class="ti ti-chevron-right"></i></button>' +
-        '</div>' +
+        '<button class="wn-arrow wn-arrow-left' +
+        (ui === 0 ? " disabled" : "") +
+        '" data-dir="prev" data-carousel="update">' +
+        '<i class="ti ti-chevron-left"></i></button>' +
+        updateCardHTML(item) +
+        '<button class="wn-arrow wn-arrow-right' +
+        (ui >= updated.length - 1 ? " disabled" : "") +
+        '" data-dir="next" data-carousel="update">' +
+        '<i class="ti ti-chevron-right"></i></button>' +
+        "</div>" +
         dotsHTML(updated.length, ui) +
-        '<div class="wn-counter">' + (ui + 1) + ' of ' + updated.length +
-        (updated.length === 1 ? ' update' : ' updates') + '</div>';
+        '<div class="wn-counter">' +
+        (ui + 1) +
+        " of " +
+        updated.length +
+        (updated.length === 1 ? " update" : " updates") +
+        "</div>";
     }
   }
 
@@ -966,7 +1054,9 @@ var Render = (function () {
   function updateNavBadges() {
     var counts = DataHelpers.getNewCounts();
     var badges = {
-      home: UIState.dashboard.summaryDismissed ? 0 : AppData.notifications.length,
+      home: UIState.dashboard.summaryDismissed
+        ? 0
+        : AppData.notifications.length,
       tasks: counts.tasks + DataHelpers.getUpdatedTasks().length,
       keep: counts.keep,
     };
