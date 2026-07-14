@@ -8,6 +8,7 @@
      Render.dashboard()             — renders the whole Home screen
      Render.category(cat)           — renders one notification category list
      Render.editScreen(section, id) — populates the edit screen from a data item
+     Render.editSources()           - V2 edit screen layout
      Render.editSubtasks(subtasks)  — re-renders just the subtask list
      Render.savedTasks(filter)      — renders the Tasks screen
      Render.savedKeep(filter)       — renders the Keep screen
@@ -69,8 +70,7 @@ var Render = (function () {
       chips += '<span class="card-chip ' + cls + '">New</span>';
     }
     if (hasUnseenUpdate(item)) {
-      chips +=
-        '<span class="card-chip chip-updated"><i class="ti ti-refresh"></i> Updated</span>';
+      chips += '<span class="card-chip chip-updated">Updated</span>';
     }
     return chips;
   }
@@ -134,6 +134,8 @@ var Render = (function () {
           "</div>"
         : "";
 
+    var chipsHTML = cardChipsHTML(item);
+
     return (
       '<div class="card' +
       (showAmber ? " card-has-update" : "") +
@@ -141,15 +143,17 @@ var Render = (function () {
       item.id +
       '">' +
       '<div class="card-header">' +
+      (chipsHTML ? '<div class="card-chip-row">' + chipsHTML + "</div>" : "") +
+      '<div class="card-title-row">' +
       '<p class="card-title">' +
       esc(item.title) +
       "</p>" +
-      cardChipsHTML(item) +
       '<div class="card-actions">' +
       '<i class="ti ti-pencil edit-task-trigger"></i>' +
       '<i class="ti ti-bell"></i>' +
       '<i class="ti ti-trash card-delete-trigger"></i>' +
       '<i class="ti ti-chevron-down card-expand-toggle"></i>' +
+      "</div>" +
       "</div>" +
       "</div>" +
       '<div class="card-body">' +
@@ -436,8 +440,9 @@ var Render = (function () {
 
   var MAX_DIFF_LINES = 3;
   var MAX_SOURCES = 2;
+  var MAX_DOTS = 7;
 
-  function newItemCardHTML(entry, index, total) {
+  function newItemCardHTML(entry) {
     var item = entry.item;
     var isTask = entry.section === "savedTasks";
     var typeClass = isTask ? "wn-card-top-task" : "wn-card-top-keep";
@@ -492,12 +497,12 @@ var Render = (function () {
       '">' +
       '<i class="ti ti-pencil"></i> Edit</button>' +
       '<div class="wn-btn-divider"></div>' +
-      '<button class="wn-btn wn-btn-discard" data-item-id="' +
+      '<button class="wn-btn wn-btn-delete" data-item-id="' +
       item.id +
       '" data-source="' +
       entry.section +
       '">' +
-      '<i class="ti ti-x"></i> Discard</button>' +
+      '<i class="ti ti-trash"></i> Delete</button>' +
       "</div>" +
       "</div>"
     );
@@ -627,9 +632,8 @@ var Render = (function () {
       item.id +
       '" data-source="savedTasks">' +
       '<div class="wn-upd-header">' +
-      '<div class="wn-upd-icon"><i class="ti ti-refresh"></i></div>' +
       '<div class="wn-upd-meta">' +
-      '<div class="wn-upd-label">Task updated</div>' +
+      '<div class="wn-upd-label"><i class="ti ti-refresh"></i> Task updated</div>' +
       '<div class="wn-upd-title">' +
       esc(item.title) +
       "</div>" +
@@ -693,79 +697,64 @@ var Render = (function () {
   }
 
   function renderActivityRedesign() {
-    var newSection = document.querySelector(".wn-new-section");
-    var updateSection = document.querySelector(".wn-update-section");
-    var separator = document.querySelector(".wn-separator");
-    if (!newSection || !updateSection) return;
+    var chipRow = document.querySelector(".wn-filter-chip-row");
+    var section = document.querySelector(".wn-activity-section");
+    if (!section) return;
 
-    // --- New items carousel ---
-    var newItems = DataHelpers.getNewItems();
-    var ni = UIState.dashboard.newItemIndex;
-    // Clamp index
-    if (ni >= newItems.length) ni = Math.max(0, newItems.length - 1);
-    UIState.dashboard.newItemIndex = ni;
-
-    if (newItems.length === 0) {
-      newSection.innerHTML = '<div class="section-empty">No new items</div>';
-    } else {
-      var entry = newItems[ni];
-      newSection.innerHTML =
-        '<div class="wn-carousel">' +
-        '<button class="wn-arrow wn-arrow-left' +
-        (ni === 0 ? " disabled" : "") +
-        '" data-dir="prev" data-carousel="new">' +
-        '<i class="ti ti-chevron-left"></i></button>' +
-        newItemCardHTML(entry, ni, newItems.length) +
-        '<button class="wn-arrow wn-arrow-right' +
-        (ni >= newItems.length - 1 ? " disabled" : "") +
-        '" data-dir="next" data-carousel="new">' +
-        '<i class="ti ti-chevron-right"></i></button>' +
-        "</div>" +
-        dotsHTML(newItems.length, ni) +
-        '<div class="wn-counter">' +
-        (ni + 1) +
-        " of " +
-        newItems.length +
-        " awaiting review</div>";
+    var filters = UIState.dashboard.activityFilters;
+    if (chipRow) {
+      chipRow.querySelectorAll(".wn-filter-chip").forEach(function (chip) {
+        chip.classList.toggle("active", !!filters[chip.dataset.filter]);
+      });
     }
 
-    // --- Update cards carousel ---
-    var updated = DataHelpers.getUpdatedTasks();
-    var ui = UIState.dashboard.updateIndex;
-    if (ui >= updated.length) ui = Math.max(0, updated.length - 1);
-    UIState.dashboard.updateIndex = ui;
+    var entries = DataHelpers.getVisibleActivityEntries();
 
-    if (updated.length === 0 && newItems.length === 0) {
-      newSection.innerHTML =
-        '<div class="section-empty">You\'re all caught up</div>';
-      updateSection.innerHTML = "";
-      if (separator) separator.hidden = true;
-    } else if (updated.length === 0) {
-      updateSection.innerHTML = "";
-      if (separator) separator.hidden = true;
-    } else {
-      if (separator) separator.hidden = false;
-      var item = updated[ui];
-      updateSection.innerHTML =
-        '<div class="wn-carousel">' +
-        '<button class="wn-arrow wn-arrow-left' +
-        (ui === 0 ? " disabled" : "") +
-        '" data-dir="prev" data-carousel="update">' +
-        '<i class="ti ti-chevron-left"></i></button>' +
-        updateCardHTML(item) +
-        '<button class="wn-arrow wn-arrow-right' +
-        (ui >= updated.length - 1 ? " disabled" : "") +
-        '" data-dir="next" data-carousel="update">' +
-        '<i class="ti ti-chevron-right"></i></button>' +
-        "</div>" +
-        dotsHTML(updated.length, ui) +
-        '<div class="wn-counter">' +
-        (ui + 1) +
-        " of " +
-        updated.length +
-        (updated.length === 1 ? " update" : " updates") +
+    var idx = UIState.dashboard.activityIndex;
+    if (idx >= entries.length) idx = Math.max(0, entries.length - 1);
+    UIState.dashboard.activityIndex = idx;
+
+    if (entries.length === 0) {
+      var nothingAtAll = DataHelpers.getActivityEntries().length === 0;
+      section.innerHTML =
+        '<div class="section-empty">' +
+        (nothingAtAll ? "You're all caught up" : "No items match this filter") +
         "</div>";
+      return;
     }
+
+    var entry = entries[idx];
+    var cardHTML =
+      entry.kind === "new"
+        ? newItemCardHTML(entry)
+        : updateCardHTML(entry.item);
+
+    var counterText;
+    if (filters.new && !filters.update) {
+      counterText = idx + 1 + " of " + entries.length + " awaiting review";
+    } else if (filters.update && !filters.new) {
+      counterText =
+        idx + 1 + " of " + entries.length + (entries.length === 1 ? " update" : " updates");
+    } else {
+      counterText = idx + 1 + " of " + entries.length;
+    }
+
+    section.innerHTML =
+      '<div class="wn-carousel">' +
+      '<button class="wn-arrow wn-arrow-left' +
+      (idx === 0 ? " disabled" : "") +
+      '" data-dir="prev" data-carousel="activity">' +
+      '<i class="ti ti-chevron-left"></i></button>' +
+      cardHTML +
+      '<button class="wn-arrow wn-arrow-right' +
+      (idx >= entries.length - 1 ? " disabled" : "") +
+      '" data-dir="next" data-carousel="activity">' +
+      '<i class="ti ti-chevron-right"></i></button>' +
+      "</div>" +
+      (entries.length <= MAX_DOTS ? dotsHTML(entries.length, idx) : "") +
+      '<div class="wn-counter">' +
+      counterText +
+      "</div>";
   }
 
   /* ---------- Dashboard: pinned row ---------- */
@@ -869,6 +858,9 @@ var Render = (function () {
 
     // Subtasks
     renderEditSubtasks(item.subtasks || []);
+
+    // Sources
+    renderEditSources(item);
   }
 
   function renderEditSubtasks(subtasks) {
@@ -897,6 +889,58 @@ var Render = (function () {
     html +=
       '<button class="add-subtask-btn"><i class="ti ti-plus"></i> Add Sub-task</button>';
     container.innerHTML = html;
+  }
+
+  function renderEditSources(item) {
+    var container = document.querySelector(".sources-section");
+    if (!container) return;
+
+    var ids = item.sourceNotifIds || [];
+    if (ids.length === 0) {
+      container.innerHTML = "";
+      container.style.display = "none";
+      return;
+    }
+
+    container.style.display = "";
+    var sourcesHTML = ids
+      .map(function (nId) {
+        var n = DataHelpers.findNotification(nId);
+        if (!n) return "";
+        return (
+          '<div class="edit-source-item">' +
+          '<div class="edit-source-row" data-notif-id="' +
+          nId +
+          '">' +
+          '<div class="edit-source-logo ' +
+          n.logoClass +
+          '"><i class="ti ' +
+          n.icon +
+          '"></i></div>' +
+          '<div class="edit-source-info"><span class="edit-source-app">' +
+          esc(n.app) +
+          "</span>" +
+          '<span class="edit-source-sub">' +
+          n.subtitle +
+          "</span></div>" +
+          '<i class="ti ti-chevron-down edit-source-chevron"></i>' +
+          "</div>" +
+          '<div class="edit-source-content" hidden>' +
+          esc(n.contents) +
+          "</div>" +
+          "</div>"
+        );
+      })
+      .join("");
+
+    container.innerHTML =
+      '<div class="edit-sources-header">' +
+      '<i class="ti ti-link"></i><span>Source notifications (' +
+      ids.length +
+      ")</span></div>" +
+      '<div class="edit-sources-list">' +
+      sourcesHTML +
+      "</div>";
   }
 
   /* ---------- Card behavior initialization ----------
@@ -1089,6 +1133,7 @@ var Render = (function () {
     category: renderCategory,
     editScreen: renderEditScreen,
     editSubtasks: renderEditSubtasks,
+    editSources: renderEditSources,
     savedTasks: renderSavedTasks,
     savedKeep: renderSavedKeep,
     navBadges: updateNavBadges,

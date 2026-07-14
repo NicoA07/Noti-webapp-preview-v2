@@ -306,6 +306,18 @@ body {
 
 .card-header {
   display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.card-chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.card-title-row {
+  display: flex;
   justify-content: space-between;
   align-items: flex-start;
   gap: 12px;
@@ -843,6 +855,10 @@ body[data-theme="dark"] .delete-all-notifs-btn:hover {
 /* ---- Dropdowns (More Options & Calendar Export) ---- */
 .edit-menu-wrap {
   position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
 }
 
 .edit-dropdown {
@@ -1043,6 +1059,104 @@ body[data-theme="dark"] .delete-all-notifs-btn:hover {
   border-radius: 6px;
 }
 
+/* ---- Edit sources section ---- */
+.sources-section {
+  margin-top: 16px;
+}
+
+.edit-sources-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 0;
+  color: #888780;
+  font-size: 13px;
+  font-weight: 500;
+}
+.edit-sources-header i {
+  font-size: 16px;
+}
+
+.edit-sources-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.edit-source-item {
+  background: #ffffff;
+  border: 0.5px solid rgba(0, 0, 0, 0.15);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.edit-source-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+.edit-source-row:hover {
+  background: rgba(0, 0, 0, 0.02);
+}
+
+.edit-source-logo {
+  width: 28px;
+  height: 28px;
+  border-radius: 7px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.edit-source-logo i {
+  color: #fff;
+  font-size: 14px;
+}
+.edit-source-logo.gmail {
+  background: #d93025;
+}
+.edit-source-logo.slack {
+  background: #4a154b;
+}
+.edit-source-logo.telegram {
+  background: #229ed9;
+}
+
+.edit-source-info {
+  flex: 1;
+  min-width: 0;
+}
+.edit-source-app {
+  font-size: 13px;
+  font-weight: 500;
+  color: #2c2c2a;
+}
+.edit-source-sub {
+  font-size: 11px;
+  color: #888780;
+  margin-left: 6px;
+}
+.edit-source-chevron {
+  font-size: 14px;
+  color: #888780;
+  transition: transform 0.2s ease;
+  flex-shrink: 0;
+}
+
+.edit-source-content {
+  padding: 10px 12px 12px;
+  font-size: 12px;
+  color: #5f5e5a;
+  line-height: 1.5;
+  border-top: 0.5px solid rgba(0, 0, 0, 0.08);
+}
+.edit-source-content[hidden] {
+  display: none;
+}
+
 /* ---- Utilities (chips at bottom) ---- */
 .utilities-section {
   padding: 16px 20px 24px;
@@ -1179,6 +1293,25 @@ body[data-theme="dark"] .delete-all-notifs-btn:hover {
 .toast-destination {
   color: var(--toast-accent);
   transition: color 0.2s ease;
+}
+
+.toast-undo-btn {
+  flex-shrink: 0;
+  background: none;
+  border: none;
+  border-left: 0.5px solid rgba(255, 255, 255, 0.25);
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--toast-accent);
+  padding: 4px 0 4px 12px;
+  margin-left: 2px;
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+.toast-undo-btn:hover {
+  opacity: 0.8;
 }
 
 @keyframes toast-check {
@@ -1698,6 +1831,31 @@ body[data-theme="dark"] .add-subtask-btn:hover {
   background: rgba(255, 255, 255, 0.04);
 }
 
+/* -- Edit sources section -- */
+body[data-theme="dark"] .edit-sources-header {
+  color: #6b6963;
+}
+body[data-theme="dark"] .edit-source-item {
+  background: #292826;
+  border-color: rgba(255, 255, 255, 0.08);
+}
+body[data-theme="dark"] .edit-source-row:hover {
+  background: rgba(255, 255, 255, 0.03);
+}
+body[data-theme="dark"] .edit-source-app {
+  color: #e5e3dc;
+}
+body[data-theme="dark"] .edit-source-sub {
+  color: #6b6963;
+}
+body[data-theme="dark"] .edit-source-chevron {
+  color: #6b6963;
+}
+body[data-theme="dark"] .edit-source-content {
+  color: #9c9a94;
+  border-top-color: rgba(255, 255, 255, 0.06);
+}
+
 /* -- Utility chips -- */
 body[data-theme="dark"] .utilities-section {
   border-top-color: rgba(255, 255, 255, 0.06);
@@ -1785,6 +1943,10 @@ body[data-theme="dark"] .toast {
 
 body[data-theme="dark"] .toast-text {
   color: #1c1b18;
+}
+
+body[data-theme="dark"] .toast-undo-btn {
+  border-left-color: rgba(28, 27, 24, 0.2);
 }
 
 /* -- Placeholder screens -- */
@@ -2508,10 +2670,50 @@ body[data-theme="dark"] .version-option small {
 
 /* ---------- What's new: REDESIGN variant ---------- */
 
-.wn-separator {
-  height: 1px;
-  background: rgba(0, 0, 0, 0.08);
-  margin: 14px 0;
+.wn-filter-chip-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.wn-filter-chip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 16px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  background: #ffffff;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 500;
+  color: #5f5e5a;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.wn-filter-chip i {
+  font-size: 14px;
+}
+
+.wn-filter-chip:hover {
+  background: rgba(0, 0, 0, 0.03);
+}
+
+.wn-filter-chip.active {
+  font-weight: 600;
+}
+
+.wn-filter-chip[data-filter="new"].active {
+  background: rgba(74, 104, 98, 0.12);
+  border-color: #4a6862;
+  color: #4a6862;
+}
+
+.wn-filter-chip[data-filter="update"].active {
+  background: rgba(245, 158, 11, 0.12);
+  border-color: #d97706;
+  color: #d97706;
 }
 
 .wn-carousel {
@@ -2690,7 +2892,7 @@ body[data-theme="dark"] .version-option small {
   color: #5f5e5a;
 }
 
-.wn-btn-discard {
+.wn-btn-delete {
   color: #dc2626;
 }
 
@@ -2717,32 +2919,24 @@ body[data-theme="dark"] .version-option small {
   cursor: pointer;
 }
 
-.wn-upd-icon {
-  width: 28px;
-  height: 28px;
-  border-radius: 8px;
-  background: rgba(245, 158, 11, 0.12);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
-.wn-upd-icon i {
-  font-size: 14px;
-  color: #f59e0b;
-}
-
 .wn-upd-meta {
   flex: 1;
   min-width: 0;
 }
 
 .wn-upd-label {
+  display: flex;
+  align-items: center;
+  gap: 4px;
   font-size: 11px;
   font-weight: 600;
   color: #d97706;
   margin-bottom: 2px;
+}
+
+.wn-upd-label i {
+  font-size: 12px;
+  color: #f59e0b;
 }
 
 .wn-upd-title {
@@ -2956,7 +3150,6 @@ body[data-theme="dark"] .version-option small {
   font-size: 11px;
   font-weight: 600;
   letter-spacing: 0.04em;
-  text-transform: uppercase;
 }
 
 .mini-type-task {
@@ -2997,8 +3190,6 @@ body[data-theme="dark"] .version-option small {
   font-size: 11px;
   font-weight: 600;
   flex-shrink: 0;
-  align-self: center;
-  margin-left: 8px;
 }
 
 .card-chip .ti {
@@ -3178,8 +3369,26 @@ body[data-theme="dark"] .version-option small {
   background: rgba(255, 255, 255, 0.06);
 }
 
-[data-theme="dark"] .wn-separator {
-  background: rgba(255, 255, 255, 0.06);
+[data-theme="dark"] .wn-filter-chip {
+  background: #292826;
+  border-color: rgba(255, 255, 255, 0.1);
+  color: #9c9a94;
+}
+
+[data-theme="dark"] .wn-filter-chip:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+[data-theme="dark"] .wn-filter-chip[data-filter="new"].active {
+  background: rgba(74, 104, 98, 0.2);
+  border-color: #6da89f;
+  color: #6da89f;
+}
+
+[data-theme="dark"] .wn-filter-chip[data-filter="update"].active {
+  background: rgba(245, 158, 11, 0.15);
+  border-color: #fbbf24;
+  color: #fbbf24;
 }
 
 [data-theme="dark"] .wn-arrow {
@@ -3258,7 +3467,7 @@ body[data-theme="dark"] .version-option small {
   color: #9c9a94;
 }
 
-[data-theme="dark"] .wn-btn-discard {
+[data-theme="dark"] .wn-btn-delete {
   color: #ef5350;
 }
 
@@ -3274,11 +3483,7 @@ body[data-theme="dark"] .version-option small {
   color: #fbbf24;
 }
 
-[data-theme="dark"] .wn-upd-icon {
-  background: rgba(245, 158, 11, 0.15);
-}
-
-[data-theme="dark"] .wn-upd-icon i {
+[data-theme="dark"] .wn-upd-label i {
   color: #fbbf24;
 }
 

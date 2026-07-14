@@ -98,11 +98,6 @@
       delete UIState.dashboard.openActivity[id];
     }
 
-    // Hide confirm button for already-saved cards (state chips stay visible)
-    var saved = isSavedSection(section);
-    var confirmBtnEl = document.querySelector(".confirm-btn");
-    if (confirmBtnEl) confirmBtnEl.style.display = saved ? "none" : "";
-
     screens.forEach(function (s) {
       s.hidden = s.dataset.screen !== "edit-task";
     });
@@ -197,47 +192,92 @@
   // Toast helper
   var toastEl = document.querySelector(".toast");
   var toastTimer = null;
+  var toastUndo = null;
 
-  function showToast(destination) {
+  function hideToast() {
+    if (!toastEl) return;
+    toastEl.classList.remove("show");
+    toastUndo = null;
+    setTimeout(function () {
+      toastEl.hidden = true;
+    }, 250);
+  }
+
+  // undoFn is optional — when present, the toast shows an "Undo" button
+  // and stays on screen longer so there's time to tap it.
+  function renderToast(bodyHTML, accent, undoFn) {
     if (!toastEl) return;
     clearTimeout(toastTimer);
+    toastUndo = undoFn || null;
 
-    const accent = destination === "Tasks" ? "#3B82F6" : "#22C55E";
     toastEl.style.setProperty("--toast-accent", accent);
-    toastEl.innerHTML = `
-      <i class="ti ti-circle-check toast-icon"></i>
-      <span class="toast-text">Moved to <span class="toast-destination">${destination}</span></span>
-    `;
+    toastEl.innerHTML =
+      bodyHTML +
+      (toastUndo ? '<button class="toast-undo-btn">Undo</button>' : "");
     toastEl.hidden = false;
     void toastEl.offsetHeight;
     toastEl.classList.add("show");
 
-    toastTimer = setTimeout(function () {
-      toastEl.classList.remove("show");
-      setTimeout(function () {
-        toastEl.hidden = true;
-      }, 250);
-    }, 1800);
+    toastTimer = setTimeout(hideToast, toastUndo ? 4000 : 1800);
   }
 
-  // Confirm button
+  function showToast(destination, undoFn) {
+    const accent = destination === "Tasks" ? "#3B82F6" : "#22C55E";
+    renderToast(
+      '<i class="ti ti-circle-check toast-icon"></i>' +
+        '<span class="toast-text">Moved to <span class="toast-destination">' +
+        destination +
+        "</span></span>",
+      accent,
+      undoFn,
+    );
+  }
+
+  function showDeleteToast(destination, undoFn) {
+    const accent = destination === "Tasks" ? "#3B82F6" : "#22C55E";
+    renderToast(
+      '<i class="ti ti-trash toast-icon"></i>' +
+        '<span class="toast-text"><span class="toast-destination">' +
+        destination +
+        "</span> deleted</span>",
+      accent,
+      undoFn,
+    );
+  }
+
+  function showSavedToast() {
+    renderToast(
+      '<i class="ti ti-circle-check toast-icon"></i>' +
+        '<span class="toast-text">Changes saved</span>',
+      "#4A6862",
+    );
+  }
+
+  if (toastEl) {
+    toastEl.addEventListener("click", function (e) {
+      if (!e.target.closest(".toast-undo-btn") || !toastUndo) return;
+      clearTimeout(toastTimer);
+      var undoFn = toastUndo;
+      toastUndo = null;
+      undoFn();
+      hideToast();
+    });
+  }
+
+  // Confirm / Save button
   var confirmBtn = document.querySelector(".confirm-btn");
   if (confirmBtn) {
     confirmBtn.addEventListener("click", function () {
       var editing = UIState.editing;
       if (!editing) return;
 
-      // Save current edits first
+      var itemBeforeSave = DataHelpers.find(editing.section, editing.id);
+      var wasNew = !!(itemBeforeSave && itemBeforeSave.isNew);
+      var stateBeforeSave = itemBeforeSave && itemBeforeSave.state;
+
+      // Save current edits first (may move the item between
+      // savedTasks <-> savedKeep and updates editing.section to match)
       saveEditChanges();
-
-      // Determine which state chip is active
-      var activeChip = document.querySelector(".state-chip.active");
-      var newState = activeChip ? activeChip.dataset.state : "task";
-      var label = newState === "task" ? "Tasks" : "Keep";
-
-      // After saveEditChanges, the card may have moved between New sections
-      // (tasks ↔ keep), so look it up in the section it now lives in
-      var currentSection = DataHelpers.stateToSection(newState);
 
       // Animate the checkmark
       confirmBtn.classList.add("confirmed");
@@ -245,11 +285,25 @@
         confirmBtn.classList.remove("confirmed");
       }, 400);
 
-      // Confirm: remove from New, push to saved array
-      DataHelpers.confirmItem(currentSection, editing.id, newState);
+      var itemAfterSave = DataHelpers.find(editing.section, editing.id);
+      var stateChanged =
+        itemAfterSave && stateBeforeSave && itemAfterSave.state !== stateBeforeSave;
 
-      // Show toast
-      showToast(label);
+      if (wasNew) {
+        // Determine which state chip is active
+        var activeChip = document.querySelector(".state-chip.active");
+        var newState = activeChip ? activeChip.dataset.state : "task";
+        var label = newState === "task" ? "Tasks" : "Keep";
+
+        // Confirm: clear the "New" flag now that the user reviewed it
+        DataHelpers.confirmItem(editing.section, editing.id, newState);
+        showToast(label);
+      } else if (stateChanged) {
+        // Task <-> Keep reassignment on an already-saved item
+        showToast(itemAfterSave.state === "task" ? "Tasks" : "Keep");
+      } else {
+        showSavedToast();
+      }
 
       // Close edit screen after a short delay so user sees the feedback
       setTimeout(function () {
@@ -257,6 +311,36 @@
         navigateTo(UIState.previousScreen);
         Render.navBadges();
       }, 600);
+    });
+  }
+
+  // Delete button (dropdown "Delete" item in the edit screen)
+  var editDeleteBtn = document.querySelector(".edit-dropdown .text-danger");
+  if (editDeleteBtn) {
+    editDeleteBtn.addEventListener("click", function () {
+      var editing = UIState.editing;
+      if (!editing) return;
+
+      var section = editing.section;
+      var id = editing.id;
+      var index = DataHelpers.findIndex(section, id);
+      var removedItem = DataHelpers.remove(section, id);
+      if (!removedItem) return;
+
+      var label = section === "savedTasks" ? "Tasks" : "Keep";
+
+      var dropdown = document.querySelector(".edit-dropdown");
+      if (dropdown) dropdown.hidden = true;
+
+      UIState.editing = null;
+      navigateTo(UIState.previousScreen);
+      Render.navBadges();
+
+      showDeleteToast(label, function undoDelete() {
+        AppData[section].splice(index, 0, removedItem);
+        renderScreenContent(UIState.activeScreen);
+        Render.navBadges();
+      });
     });
   }
 
@@ -474,13 +558,19 @@
     // --- Redesign: carousel arrows ---
     var arrow = e.target.closest(".wn-arrow");
     if (arrow && !arrow.classList.contains("disabled")) {
-      var carousel = arrow.dataset.carousel;
       var dir = arrow.dataset.dir;
-      if (carousel === "new") {
-        UIState.dashboard.newItemIndex += dir === "next" ? 1 : -1;
-      } else if (carousel === "update") {
-        UIState.dashboard.updateIndex += dir === "next" ? 1 : -1;
-      }
+      UIState.dashboard.activityIndex += dir === "next" ? 1 : -1;
+      Render.dashboard();
+      return;
+    }
+
+    // --- Redesign: New/Updated filter chips ---
+    var filterChip = e.target.closest(".wn-filter-chip");
+    if (filterChip) {
+      var filterKey = filterChip.dataset.filter;
+      var filters = UIState.dashboard.activityFilters;
+      filters[filterKey] = !filters[filterKey];
+      UIState.dashboard.activityIndex = 0;
       Render.dashboard();
       return;
     }
@@ -494,12 +584,16 @@
       if (item) {
         item.isNew = false;
         // Clamp carousel index
-        var newItems = DataHelpers.getNewItems();
-        if (UIState.dashboard.newItemIndex >= newItems.length) {
-          UIState.dashboard.newItemIndex = Math.max(0, newItems.length - 1);
+        var visible = DataHelpers.getVisibleActivityEntries();
+        if (UIState.dashboard.activityIndex >= visible.length) {
+          UIState.dashboard.activityIndex = Math.max(0, visible.length - 1);
         }
         var label = source === "savedTasks" ? "Tasks" : "Keep";
-        showToast(label);
+        showToast(label, function undoApprove() {
+          item.isNew = true;
+          Render.dashboard();
+          Render.navBadges();
+        });
         Render.dashboard();
         Render.navBadges();
       }
@@ -513,13 +607,24 @@
       return;
     }
 
-    // --- Redesign: discard new item ---
-    var discardBtn = e.target.closest(".wn-btn-discard");
-    if (discardBtn) {
-      DataHelpers.remove(discardBtn.dataset.source, discardBtn.dataset.itemId);
-      var newItems = DataHelpers.getNewItems();
-      if (UIState.dashboard.newItemIndex >= newItems.length) {
-        UIState.dashboard.newItemIndex = Math.max(0, newItems.length - 1);
+    // --- Redesign: delete new item ---
+    var deleteBtn = e.target.closest(".wn-btn-delete");
+    if (deleteBtn) {
+      var deleteSource = deleteBtn.dataset.source;
+      var deleteId = deleteBtn.dataset.itemId;
+      var deleteIndex = DataHelpers.findIndex(deleteSource, deleteId);
+      var removedItem = DataHelpers.remove(deleteSource, deleteId);
+      if (removedItem) {
+        var visible = DataHelpers.getVisibleActivityEntries();
+        if (UIState.dashboard.activityIndex >= visible.length) {
+          UIState.dashboard.activityIndex = Math.max(0, visible.length - 1);
+        }
+        var deleteLabel = deleteSource === "savedTasks" ? "Tasks" : "Keep";
+        showDeleteToast(deleteLabel, function undoDelete() {
+          AppData[deleteSource].splice(deleteIndex, 0, removedItem);
+          Render.dashboard();
+          Render.navBadges();
+        });
       }
       Render.dashboard();
       Render.navBadges();
@@ -568,9 +673,9 @@
           u.seen = true;
         });
         delete UIState.dashboard.openUpdateCard[dismissBtn.dataset.itemId];
-        var updated = DataHelpers.getUpdatedTasks();
-        if (UIState.dashboard.updateIndex >= updated.length) {
-          UIState.dashboard.updateIndex = Math.max(0, updated.length - 1);
+        var visible = DataHelpers.getVisibleActivityEntries();
+        if (UIState.dashboard.activityIndex >= visible.length) {
+          UIState.dashboard.activityIndex = Math.max(0, visible.length - 1);
         }
         Render.dashboard();
         Render.navBadges();
@@ -632,6 +737,19 @@
     if (editCb) {
       editCb.classList.toggle("ti-square");
       editCb.classList.toggle("ti-square-check");
+      return;
+    }
+
+    // --- Edit source expand/collapse ---
+    var srcRow = e.target.closest(".edit-source-row");
+    if (srcRow) {
+      var content = srcRow.nextElementSibling;
+      var chevron = srcRow.querySelector(".edit-source-chevron");
+      if (content && content.classList.contains("edit-source-content")) {
+        content.hidden = !content.hidden;
+        if (chevron)
+          chevron.style.transform = content.hidden ? "" : "rotate(180deg)";
+      }
       return;
     }
   });
